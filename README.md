@@ -1,2 +1,1 @@
-# ddspp
-DDS++
+# DDS++

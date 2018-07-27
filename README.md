@@ -29,7 +29,7 @@ if(initialData)
             if(desc.arraySize > 1)
             {
                 srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
-                srvDesc.Texture2DArray.MipLevels = desc.mipMapCount;
+                srvDesc.Texture2DArray.MipLevels = desc.numMips;
                 srvDesc.Texture2DArray.ArraySize = desc.arraySize;
             }
             else
@@ -48,7 +48,7 @@ if(initialData)
         imageCreateInfo.pNext = nullptr;
         imageCreateInfo.format = GetVulkanFormat(desc.format); // Translate DXGI format to Vulkan
         imageCreateInfo.extent = { desc.width, desc.height, desc.depth };
-        imageCreateInfo.mipLevels = desc.mipMapCount;
+        imageCreateInfo.mipLevels = desc.numMips;
         imageCreateInfo.arrayLayers = desc.arraySize;
         if(desc.type == ddspp::Texture2D)
         {

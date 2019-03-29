@@ -42,7 +42,7 @@ if(initialData)
     }
 
     // Vulkan Example
-	{
+    {
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageCreateInfo.pNext = nullptr;

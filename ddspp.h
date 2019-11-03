@@ -349,7 +349,7 @@ namespace ddspp
 		unsigned int height;
 		unsigned int depth;
 		unsigned int numMips;
-		unsigned int arraySize;		
+		unsigned int arraySize;
 		unsigned int rowPitch; // Row pitch for mip 0
 		unsigned int depthPitch; // Size of mip 0
 		unsigned int bitsPerPixelOrBlock; // If compressed bits per block, else bits per pixel
@@ -940,7 +940,7 @@ namespace ddspp
 		header.reserved1[0] = header.reserved1[1] = header.reserved1[2] = 0;
 		header.reserved1[3] = header.reserved1[4] = header.reserved1[5] = 0;
 		header.reserved1[6] = header.reserved1[7] = header.reserved1[8] = 0;
-		header.reserved1[9] = header.reserved1[10];
+		header.reserved1[9] = header.reserved1[10] = 0;
 		
 		// Fill in pixel format
 		PixelFormat& ddspf = header.ddspf;

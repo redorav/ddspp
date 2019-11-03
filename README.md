@@ -1,10 +1,10 @@
 # DDS++
 
-DDS header decoders are typically not multiplatform and pull in many extra headers. This single header with no dependencies can decode and encode the DDS headers and compute the mipmap and slice offset of a given DDS texture. It is meant as an aid to provide the information to graphics APIs to upload data to the GPU.
+DDS image readers are typically not multiplatform and pull in many extra headers (e.g. the fantastic [gli](https://github.com/g-truc/gli) or [Microsoft DirectXTex](https://github.com/Microsoft/DirectXTex)) This single no-dependency header can decode and encode the DDS headers and compute the mipmap and slice offset of a given DDS texture. It is meant as an aid to provide this information directly to graphics APIs to upload data to the GPU.
 
 ## Usage
 
-The code below is not meant to be an exhaustive example on how to create textures from DDS, merely a guideline of how you would go about implementing this in your own engine/API.
+The code below is not meant to be an exhaustive example on how to create textures from a DDS file, merely a guideline of how you would go about using this in your own engine/API.
 
 ```cpp
 #include "ddspp.h"
@@ -29,7 +29,7 @@ if(initialData)
             if(desc.arraySize > 1)
             {
                 srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
-                srvDesc.Texture2DArray.MipLevels = desc.mipMapCount;
+                srvDesc.Texture2DArray.MipLevels = desc.numMips;
                 srvDesc.Texture2DArray.ArraySize = desc.arraySize;
             }
             else
@@ -42,13 +42,13 @@ if(initialData)
     }
 
     // Vulkan Example
-	{
+    {
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageCreateInfo.pNext = nullptr;
         imageCreateInfo.format = GetVulkanFormat(desc.format); // Translate DXGI format to Vulkan
         imageCreateInfo.extent = { desc.width, desc.height, desc.depth };
-        imageCreateInfo.mipLevels = desc.mipMapCount;
+        imageCreateInfo.mipLevels = desc.numMips;
         imageCreateInfo.arrayLayers = desc.arraySize;
         if(desc.type == ddspp::Texture2D)
         {

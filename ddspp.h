@@ -333,6 +333,9 @@ namespace ddspp
 
 	static_assert(sizeof(HeaderDXT10) == 20, "DDS DX10 Extended Header size mismatch");
 
+	// Maximum possible size of header. Use this to read in only the header, decode, seek to the real header size, then read in the rest of the image data
+	ddspp_constexpr int MAX_HEADER_SIZE = sizeof(DDS_MAGIC) + sizeof(Header) + sizeof(HeaderDXT10);
+
 	enum TextureType
 	{
 		Texture1D,
@@ -357,6 +360,7 @@ namespace ddspp
 		unsigned int blockHeight;
 		bool compressed;
 		bool srgb;
+		unsigned int headerSize; // Actual size of header, use this to get to image data
 	};
 
 	inline ddspp_constexpr bool is_compressed(DXGIFormat format)
@@ -583,7 +587,7 @@ namespace ddspp
 		return;
 	}
 
-	inline unsigned char* decode_header(unsigned char* sourceData, Descriptor& desc)
+	inline void decode_header(unsigned char* sourceData, Descriptor& desc)
 	{
 		unsigned int magic = *reinterpret_cast<unsigned int*>(sourceData); // First 4 bytes are the magic DDS number
 
@@ -895,10 +899,7 @@ namespace ddspp
 		
 		desc.rowPitch = desc.width * desc.bitsPerPixelOrBlock / (8 * desc.blockWidth);
 		desc.depthPitch = desc.rowPitch * desc.height / desc.blockHeight;
-
-		unsigned int offset = sizeof(DDS_MAGIC) + sizeof(Header) + (dxt10Extension ? sizeof(HeaderDXT10) : 0);
-
-		return sourceData + offset;
+		desc.headerSize = sizeof(DDS_MAGIC) + sizeof(Header) + (dxt10Extension ? sizeof(HeaderDXT10) : 0);
 	}
 
 	inline void encode_header(const DXGIFormat format, const unsigned int width, const unsigned int height, const unsigned int depth,

@@ -14,7 +14,8 @@ const char* ddsData = ...
 
 // Decode header and get pointer to initial data
 ddspp::Descriptor desc;
-const char* initialData = ddspp::decode_header(ddsData, desc);
+ddspp::decode_header(ddsData, desc);
+const char* initialData = ddsData + desc.headerSize;
 
 // Feed to the graphics API
 if(initialData)

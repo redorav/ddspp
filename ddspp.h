@@ -336,6 +336,12 @@ namespace ddspp
 	// Maximum possible size of header. Use this to read in only the header, decode, seek to the real header size, then read in the rest of the image data
 	ddspp_constexpr int MAX_HEADER_SIZE = sizeof(DDS_MAGIC) + sizeof(Header) + sizeof(HeaderDXT10);
 
+	enum Result
+	{
+		Success,
+		Error
+	};
+
 	enum TextureType
 	{
 		Texture1D,
@@ -587,13 +593,13 @@ namespace ddspp
 		return;
 	}
 
-	inline void decode_header(unsigned char* sourceData, Descriptor& desc)
+	inline Result decode_header(unsigned char* sourceData, Descriptor& desc)
 	{
 		unsigned int magic = *reinterpret_cast<unsigned int*>(sourceData); // First 4 bytes are the magic DDS number
 
 		if (magic != DDS_MAGIC)
 		{
-			return nullptr;
+			return Result::Error;
 		}
 
 		const Header header = *reinterpret_cast<const Header*>(sourceData + sizeof(DDS_MAGIC));
@@ -847,7 +853,7 @@ namespace ddspp
 		{
 			if((header.caps2 & DDS_HEADER_CAPS2_CUBEMAP_ALLFACES) != DDS_HEADER_CAPS2_CUBEMAP_ALLFACES)
 			{
-				return nullptr;
+				return Result::Error;
 			}
 
 			desc.type = Cubemap;
@@ -900,6 +906,8 @@ namespace ddspp
 		desc.rowPitch = desc.width * desc.bitsPerPixelOrBlock / (8 * desc.blockWidth);
 		desc.depthPitch = desc.rowPitch * desc.height / desc.blockHeight;
 		desc.headerSize = sizeof(DDS_MAGIC) + sizeof(Header) + (dxt10Extension ? sizeof(HeaderDXT10) : 0);
+
+		return Result::Success;
 	}
 
 	inline void encode_header(const DXGIFormat format, const unsigned int width, const unsigned int height, const unsigned int depth,

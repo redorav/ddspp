@@ -113,7 +113,7 @@ namespace ddspp
 	using namespace internal;
 
 	// https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_resource_dimension
-	enum DXGIResourceDimension
+	enum DXGIResourceDimension : unsigned char
 	{
 		DXGI_Unknown,
 		DXGI_Buffer,
@@ -123,7 +123,7 @@ namespace ddspp
 	};
 
 	// Matches DXGI_FORMAT https://docs.microsoft.com/en-us/windows/desktop/api/dxgiformat/ne-dxgiformat-dxgi_format
-	enum DXGIFormat
+	enum DXGIFormat : unsigned int
 	{
 		UNKNOWN	                    = 0,
 		R32G32B32A32_TYPELESS       = 1,
@@ -336,13 +336,13 @@ namespace ddspp
 	// Maximum possible size of header. Use this to read in only the header, decode, seek to the real header size, then read in the rest of the image data
 	ddspp_constexpr int MAX_HEADER_SIZE = sizeof(DDS_MAGIC) + sizeof(Header) + sizeof(HeaderDXT10);
 
-	enum Result
+	enum Result : unsigned char
 	{
 		Success,
 		Error
 	};
 
-	enum TextureType
+	enum TextureType : unsigned char
 	{
 		Texture1D,
 		Texture2D,

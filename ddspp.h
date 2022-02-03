@@ -369,6 +369,12 @@ namespace ddspp
 		unsigned int headerSize; // Actual size of header, use this to get to image data
 	};
 
+	inline ddspp_constexpr bool is_dxt10(const Header& header)
+	{
+		const PixelFormat& ddspf = header.ddspf;
+		return (ddspf.flags & DDS_FOURCC) && (ddspf.fourCC == FOURCC_DXT10);
+	}
+
 	inline ddspp_constexpr bool is_compressed(DXGIFormat format)
 	{
 		return (format >= BC1_UNORM && format <= BC5_SNORM) || 
@@ -604,7 +610,7 @@ namespace ddspp
 
 		const Header header = *reinterpret_cast<const Header*>(sourceData + sizeof(DDS_MAGIC));
 		const PixelFormat& ddspf = header.ddspf;
-		bool dxt10Extension = (ddspf.flags & DDS_FOURCC) && (ddspf.fourCC == FOURCC_DXT10);
+		bool dxt10Extension = is_dxt10(header);
 		const HeaderDXT10 dxt10Header = *reinterpret_cast<const HeaderDXT10*>(sourceData + sizeof(DDS_MAGIC) + sizeof(Header));
 
 		// Read basic data from the header

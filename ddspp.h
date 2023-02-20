@@ -362,8 +362,8 @@ namespace ddspp
 		unsigned int rowPitch; // Row pitch for mip 0
 		unsigned int depthPitch; // Size of mip 0
 		unsigned int bitsPerPixelOrBlock; // If compressed bits per block, else bits per pixel
-		unsigned int blockWidth;
-		unsigned int blockHeight;
+		unsigned int blockWidth; // Width of block in pixels (1 if uncompressed)
+		unsigned int blockHeight;// Height of block in pixels (1 if uncompressed)
 		bool compressed;
 		bool srgb;
 		unsigned int headerSize; // Actual size of header, use this to get to image data
@@ -599,13 +599,27 @@ namespace ddspp
 		return;
 	}
 
+	inline ddspp_constexpr unsigned int get_row_pitch(unsigned int width, unsigned int bitsPerPixelOrBlock, unsigned int blockWidth, unsigned int mip)
+	{
+		// Shift width by mipmap index, round to next block size and round to next byte (for the rare less than 1 byte per pixel formats)
+		// E.g. width = 119, mip = 3, BC1 compression
+		// ((((119 >> 2) + 4 - 1) / 4) * 64) / 8 = 64 bytes
+		return ((((width >> mip) + blockWidth - 1) / blockWidth) * bitsPerPixelOrBlock + 7) / 8;
+	}
+
+	// Returns number of bytes for each row of a given mip. Valid range is [0, desc.numMips)
+	inline ddspp_constexpr unsigned int get_row_pitch(const Descriptor& desc, unsigned int mip)
+	{
+		return get_row_pitch(desc.width, desc.bitsPerPixelOrBlock, desc.blockWidth, mip);
+	}
+
 	inline Result decode_header(unsigned char* sourceData, Descriptor& desc)
 	{
 		unsigned int magic = *reinterpret_cast<unsigned int*>(sourceData); // First 4 bytes are the magic DDS number
 
 		if (magic != DDS_MAGIC)
 		{
-			return Result::Error;
+			return ddspp::Error;
 		}
 
 		const Header header = *reinterpret_cast<const Header*>(sourceData + sizeof(DDS_MAGIC));
@@ -859,7 +873,7 @@ namespace ddspp
 		{
 			if((header.caps2 & DDS_HEADER_CAPS2_CUBEMAP_ALLFACES) != DDS_HEADER_CAPS2_CUBEMAP_ALLFACES)
 			{
-				return Result::Error;
+				return ddspp::Error;
 			}
 
 			desc.type = Cubemap;
@@ -909,11 +923,11 @@ namespace ddspp
 		desc.bitsPerPixelOrBlock = get_bits_per_pixel_or_block(desc.format);
 		get_block_size(desc.format, desc.blockWidth, desc.blockHeight);
 		
-		desc.rowPitch = desc.width * desc.bitsPerPixelOrBlock / (8 * desc.blockWidth);
+		desc.rowPitch = get_row_pitch(desc.width, desc.bitsPerPixelOrBlock, desc.blockWidth, 0);
 		desc.depthPitch = desc.rowPitch * desc.height / desc.blockHeight;
 		desc.headerSize = sizeof(DDS_MAGIC) + sizeof(Header) + (dxt10Extension ? sizeof(HeaderDXT10) : 0);
 
-		return Result::Success;
+		return ddspp::Success;
 	}
 
 	inline void encode_header(const DXGIFormat format, const unsigned int width, const unsigned int height, const unsigned int depth,

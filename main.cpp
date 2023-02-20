@@ -19,11 +19,17 @@ int main()
 	fread(data, sizeof(*data), ddsSize, fh);
 
 	ddspp::Descriptor desc;
-	unsigned char* ddsData = ddspp::decode_header(data, desc);
+	ddspp::Result ddsResult = ddspp::decode_header(data, desc);
 
-	ddspp::Header h;
+	ddspp::Header header;
 	ddspp::HeaderDXT10 h10;
-	ddspp::encode_header(desc.format, desc.width, desc.height, desc.depth, desc.type, desc.numMips, desc.arraySize, h, h10);
+	ddspp::encode_header(desc.format, desc.width, desc.height, desc.depth, desc.type, desc.numMips, desc.arraySize, header, h10);
+
+	unsigned int rowPitch512 = ddspp::get_row_pitch(512, 64, 4, 0);
+
+	unsigned int rowPitch = ddspp::get_row_pitch(29, 8, 1, 0);
+
+	unsigned int rowPitchDesc = ddspp::get_row_pitch(desc, 0);
 
 	unsigned int offset = ddspp::get_offset(desc, 4, 0);
 

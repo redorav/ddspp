@@ -14,12 +14,13 @@ const char* ddsData = ...
 
 // Decode header and get pointer to initial data
 ddspp::Descriptor desc;
-ddspp::decode_header(ddsData, desc);
-const char* initialData = ddsData + desc.headerSize;
+ddspp::Result decodeResult = ddspp::decode_header(ddsData, desc);
 
 // Feed to the graphics API
-if(initialData)
+if(decodeResult == ddspp::Success)
 {
+    const char* initialData = ddsData + desc.headerSize;
+
     // D3D example
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

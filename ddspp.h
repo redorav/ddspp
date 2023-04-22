@@ -889,7 +889,7 @@ namespace ddspp
 			switch(dxt10Header.resourceDimension)
 			{
 			case DXGI_Texture1D:
-				desc.width = desc.height = 1;
+				desc.depth = 1;
 				desc.type = Texture1D;
 				break;
 			case DXGI_Texture2D:

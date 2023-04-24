@@ -1,9 +1,10 @@
 #pragma once
 
 // Sources
-// https://docs.microsoft.com/en-us/windows/uwp/gaming/complete-code-for-ddstextureloader
-// https://docs.microsoft.com/en-us/windows/desktop/direct3ddds/dds-header
-// https://docs.microsoft.com/en-us/windows/desktop/direct3ddds/dds-header-dxt10
+// https://learn.microsoft.com/en-us/windows/uwp/gaming/complete-code-for-ddstextureloader
+// https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dds-header
+// https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dds-header-dxt10
+// https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dds-pixelformat
 
 #if (__cpp_constexpr == 201304) || (_MSC_VER > 1900)
 #define ddspp_constexpr constexpr
@@ -16,12 +17,16 @@ namespace ddspp
 	namespace internal
 	{
 		static ddspp_constexpr unsigned int DDS_MAGIC      = 0x20534444;
-		static ddspp_constexpr unsigned int DDS_FOURCC     = 0x00000004; // DDPF_FOURCC
-		static ddspp_constexpr unsigned int DDS_RGB        = 0x00000040; // DDPF_RGB
-		static ddspp_constexpr unsigned int DDS_RGBA       = 0x00000041; // DDPF_RGB | DDPF_ALPHAPIXELS
-		static ddspp_constexpr unsigned int DDS_LUMINANCE  = 0x00020000; // DDPF_LUMINANCE
-		static ddspp_constexpr unsigned int DDS_LUMINANCEA = 0x00020001; // DDPF_LUMINANCE | DDPF_ALPHAPIXELS
-		static ddspp_constexpr unsigned int DDS_ALPHA      = 0x00000002; // DDPF_ALPHA
+
+		static ddspp_constexpr unsigned int DDS_ALPHAPIXELS = 0x00000001;
+		static ddspp_constexpr unsigned int DDS_ALPHA       = 0x00000002; // DDPF_ALPHA
+		static ddspp_constexpr unsigned int DDS_FOURCC      = 0x00000004; // DDPF_FOURCC
+		static ddspp_constexpr unsigned int DDS_RGB         = 0x00000040; // DDPF_RGB
+		static ddspp_constexpr unsigned int DDS_RGBA        = 0x00000041; // DDPF_RGB | DDPF_ALPHAPIXELS
+		static ddspp_constexpr unsigned int DDS_YUV         = 0x00000200; // DDPF_YUV
+		static ddspp_constexpr unsigned int DDS_LUMINANCE   = 0x00020000; // DDPF_LUMINANCE
+		static ddspp_constexpr unsigned int DDS_LUMINANCEA  = 0x00020001; // DDPF_LUMINANCE | DDPF_ALPHAPIXELS
+		
 		static ddspp_constexpr unsigned int DDS_PAL8       = 0x00000020; // DDPF_PALETTEINDEXED8
 		static ddspp_constexpr unsigned int DDS_BUMPDUDV   = 0x00080000; // DDPF_BUMPDUDV
 
@@ -50,40 +55,53 @@ namespace ddspp
 			DDS_HEADER_CAPS2_CUBEMAP_POSITIVEX | DDS_HEADER_CAPS2_CUBEMAP_NEGATIVEX | DDS_HEADER_CAPS2_CUBEMAP_POSITIVEY | 
 			DDS_HEADER_CAPS2_CUBEMAP_NEGATIVEY | DDS_HEADER_CAPS2_CUBEMAP_POSITIVEZ | DDS_HEADER_CAPS2_CUBEMAP_NEGATIVEZ;
 
-		static ddspp_constexpr unsigned int DXGI_MISC_FLAG_CUBEMAP = 0x2; // https://docs.microsoft.com/en-us/windows/desktop/api/d3d11/ne-d3d11-d3d11_resource_misc_flag
+		static ddspp_constexpr unsigned int DXGI_MISC_FLAG_CUBEMAP = 0x2; // https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_resource_misc_flag
 		static ddspp_constexpr unsigned int DDS_MISC_FLAGS2_ALPHA_MODE_MASK = 0x7;
 
-		ddspp_constexpr inline unsigned int MakeFourCC(const char* value) { return value[0] + (value[1] << 8) + (value[2] << 16) + (value[3] << 24); }
+		#define ddspp_make_fourcc(a, b, c, d) ((a) + ((b) << 8) + ((c) << 16) + ((d) << 24))
 
 		// FOURCC constants
-		static ddspp_constexpr unsigned int FOURCC_DXT1 = MakeFourCC("DXT1"); // BC1_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT2 = MakeFourCC("DXT2"); // BC2_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT3 = MakeFourCC("DXT3"); // BC2_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT4 = MakeFourCC("DXT4"); // BC3_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT5 = MakeFourCC("DXT5"); // BC3_UNORM
-		static ddspp_constexpr unsigned int FOURCC_ATI1 = MakeFourCC("ATI1"); // BC4_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC4U = MakeFourCC("BC4U"); // BC4_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC4S = MakeFourCC("BC4S"); // BC4_SNORM
-		static ddspp_constexpr unsigned int FOURCC_ATI2 = MakeFourCC("ATI2"); // BC5_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC5U = MakeFourCC("BC5U"); // BC5_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC5S = MakeFourCC("BC5S"); // BC5_SNORM
-		static ddspp_constexpr unsigned int FOURCC_RGBG = MakeFourCC("RGBG"); // R8G8_B8G8_UNORM
-		static ddspp_constexpr unsigned int FOURCC_GRBG = MakeFourCC("GRBG"); // G8R8_G8B8_UNORM
-		static ddspp_constexpr unsigned int FOURCC_YUY2 = MakeFourCC("YUY2"); // YUY2
-		static ddspp_constexpr unsigned int FOURCC_DXT10 = MakeFourCC("DX10"); // DDS extension header
+		static ddspp_constexpr unsigned int FOURCC_DXT1 = ddspp_make_fourcc('D', 'X', 'T', '1'); // BC1_UNORM
+		static ddspp_constexpr unsigned int FOURCC_DXT2 = ddspp_make_fourcc('D', 'X', 'T', '2'); // BC2_UNORM
+		static ddspp_constexpr unsigned int FOURCC_DXT3 = ddspp_make_fourcc('D', 'X', 'T', '3'); // BC2_UNORM
+		static ddspp_constexpr unsigned int FOURCC_DXT4 = ddspp_make_fourcc('D', 'X', 'T', '4'); // BC3_UNORM
+		static ddspp_constexpr unsigned int FOURCC_DXT5 = ddspp_make_fourcc('D', 'X', 'T', '5'); // BC3_UNORM
+		static ddspp_constexpr unsigned int FOURCC_ATI1 = ddspp_make_fourcc('A', 'T', 'I', '1'); // BC4_UNORM
+		static ddspp_constexpr unsigned int FOURCC_BC4U = ddspp_make_fourcc('B', 'C', '4', 'U'); // BC4_UNORM
+		static ddspp_constexpr unsigned int FOURCC_BC4S = ddspp_make_fourcc('B', 'C', '4', 'S'); // BC4_SNORM
+		static ddspp_constexpr unsigned int FOURCC_ATI2 = ddspp_make_fourcc('A', 'T', 'I', '2'); // BC5_UNORM
+		static ddspp_constexpr unsigned int FOURCC_BC5U = ddspp_make_fourcc('B', 'C', '5', 'U'); // BC5_UNORM
+		static ddspp_constexpr unsigned int FOURCC_BC5S = ddspp_make_fourcc('B', 'C', '5', 'S'); // BC5_SNORM
+		static ddspp_constexpr unsigned int FOURCC_RGBG = ddspp_make_fourcc('R', 'G', 'B', 'G'); // R8G8_B8G8_UNORM
+		static ddspp_constexpr unsigned int FOURCC_GRBG = ddspp_make_fourcc('G', 'R', 'G', 'B'); // G8R8_G8B8_UNORM
+		static ddspp_constexpr unsigned int FOURCC_YUY2 = ddspp_make_fourcc('Y', 'U', 'Y', '2'); // YUY2
+		static ddspp_constexpr unsigned int FOURCC_DXT10 = ddspp_make_fourcc('D', 'X', '1', '0'); // DDS extension header
 
-		// These values come from the original D3D9 D3DFORMAT values https://docs.microsoft.com/en-us/windows/desktop/direct3d9/d3dformat
-		static ddspp_constexpr unsigned int FOURCC_R5G6B5  =  23; // B5G6R5_UNORM   (needs swizzling)
-		static ddspp_constexpr unsigned int FOURCC_RGB5A1  =  25; // B5G5R5A1_UNORM (needs swizzling)
-		static ddspp_constexpr unsigned int FOURCC_RGBA4   =  26; // B4G4R4A4_UNORM (needs swizzling)
-		static ddspp_constexpr unsigned int FOURCC_RGBA16U =  36; // R16G16B16A16_UNORM
-		static ddspp_constexpr unsigned int FOURCC_RGBA16S = 110; // R16G16B16A16_SNORM
-		static ddspp_constexpr unsigned int FOURCC_R16F    = 111; // R16_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RG16F   = 112; // R16G16_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RGBA16F = 113; // R16G16B16A16_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_R32F    = 114; // R32_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RG32F   = 115; // R32G32_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RGBA32F = 116; // R32G32B32A32_FLOAT
+		// These values come from the original D3D9 D3DFORMAT values https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
+		static ddspp_constexpr unsigned int FOURCC_RGB8        =  20;
+		static ddspp_constexpr unsigned int FOURCC_A8R8G8B8    =  21;
+		static ddspp_constexpr unsigned int FOURCC_X8R8G8B8    =  22;
+		static ddspp_constexpr unsigned int FOURCC_R5G6B5      =  23; // B5G6R5_UNORM   (needs swizzling)
+		static ddspp_constexpr unsigned int FOURCC_X1R5G5B5    =  24;
+		static ddspp_constexpr unsigned int FOURCC_RGB5A1      =  25; // B5G5R5A1_UNORM (needs swizzling)
+		static ddspp_constexpr unsigned int FOURCC_RGBA4       =  26; // B4G4R4A4_UNORM (needs swizzling)
+		static ddspp_constexpr unsigned int FOURCC_R3G3B2      =  27;
+		static ddspp_constexpr unsigned int FOURCC_A8          =  28;
+		static ddspp_constexpr unsigned int FOURCC_A8R3G3B2    =  29;
+		static ddspp_constexpr unsigned int FOURCC_X4R4G4B4    =  30;
+		static ddspp_constexpr unsigned int FOURCC_A2B10G10R10 =  31;
+		static ddspp_constexpr unsigned int FOURCC_A8B8G8R8    =  32;
+		static ddspp_constexpr unsigned int FOURCC_X8B8G8R8    =  33;
+		static ddspp_constexpr unsigned int FOURCC_G16R16      =  34;
+		static ddspp_constexpr unsigned int FOURCC_A2R10G10B10 =  35;
+		static ddspp_constexpr unsigned int FOURCC_RGBA16U     =  36; // R16G16B16A16_UNORM
+		static ddspp_constexpr unsigned int FOURCC_RGBA16S     = 110; // R16G16B16A16_SNORM
+		static ddspp_constexpr unsigned int FOURCC_R16F        = 111; // R16_FLOAT
+		static ddspp_constexpr unsigned int FOURCC_RG16F       = 112; // R16G16_FLOAT
+		static ddspp_constexpr unsigned int FOURCC_RGBA16F     = 113; // R16G16B16A16_FLOAT
+		static ddspp_constexpr unsigned int FOURCC_R32F        = 114; // R32_FLOAT
+		static ddspp_constexpr unsigned int FOURCC_RG32F       = 115; // R32G32_FLOAT
+		static ddspp_constexpr unsigned int FOURCC_RGBA32F     = 116; // R32G32B32A32_FLOAT
 
 		struct PixelFormat
 		{
@@ -639,103 +657,85 @@ namespace ddspp
 		desc.type = Texture2D;
 		desc.format = UNKNOWN;
 
-		if(ddspf.flags & DDS_FOURCC)
+		if (dxt10Extension)
 		{
-			unsigned int fourCC = ddspf.fourCC;
+			desc.format = dxt10Header.dxgiFormat;
 
-			if (fourCC == FOURCC_DXT10)
+			desc.arraySize = dxt10Header.arraySize;
+
+			switch(dxt10Header.resourceDimension)
 			{
-				desc.format = dxt10Header.dxgiFormat;
-				desc.arraySize = dxt10Header.arraySize;
-			}
-			else if(fourCC == FOURCC_DXT1)
-			{
-				desc.format = BC1_UNORM;
-			}
-			else if(fourCC == FOURCC_DXT2 || fourCC == FOURCC_DXT3)
-			{
-				desc.format = BC2_UNORM;
-			}
-			else if(fourCC == FOURCC_DXT4 || fourCC == FOURCC_DXT5)
-			{
-				desc.format = BC3_UNORM;
-			}
-			else if(fourCC == FOURCC_ATI1 || fourCC == FOURCC_BC4U)
-			{
-				desc.format = BC4_UNORM;
-			}
-			else if(fourCC == FOURCC_BC4S)
-			{
-				desc.format = BC4_SNORM;
-			}
-			else if(fourCC == FOURCC_ATI2 || fourCC == FOURCC_BC5U)
-			{
-				desc.format = BC5_UNORM;
-			}
-			else if(fourCC == FOURCC_BC5S)
-			{
-				desc.format = BC5_SNORM;
-			}
-			else if(fourCC == FOURCC_RGBG)
-			{
-				desc.format = R8G8_B8G8_UNORM;
-			}
-			else if(fourCC == FOURCC_GRBG)
-			{
-				desc.format = G8R8_G8B8_UNORM;
-			}
-			else if(fourCC == FOURCC_YUY2)
-			{
-				desc.format = YUY2;
-			}
-			else if(fourCC == FOURCC_R5G6B5)
-			{
-				desc.format = B5G6R5_UNORM;
-			}
-			else if(fourCC == FOURCC_RGB5A1)
-			{
-				desc.format = B5G5R5A1_UNORM;
-			}
-			else if(fourCC == FOURCC_RGBA4)
-			{
-				desc.format = B4G4R4A4_UNORM;
-			}
-			else if(fourCC == FOURCC_RGBA16U)
-			{
-				desc.format = R16G16B16A16_UNORM;
-			}
-			else if(fourCC == FOURCC_RGBA16S)
-			{
-				desc.format = R16G16B16A16_SNORM;
-			}
-			else if(fourCC == FOURCC_R16F)
-			{
-				desc.format = R16_FLOAT;
-			}
-			else if(fourCC == FOURCC_RG16F)
-			{
-				desc.format = R16G16_FLOAT;
-			}
-			else if(fourCC == FOURCC_RGBA16F)
-			{
-				desc.format = R16G16B16A16_FLOAT;
-			}
-			else if(fourCC == FOURCC_R32F)
-			{
-				desc.format = R32_FLOAT;
-			}
-			else if(fourCC == FOURCC_RG32F)
-			{
-				desc.format = R32G32_FLOAT;
-			}
-			else if(fourCC == FOURCC_RGBA32F)
-			{
-				desc.format = R32G32B32A32_FLOAT;
+				case DXGI_Texture1D:
+					desc.depth = 1;
+					desc.type = Texture1D;
+					break;
+				case DXGI_Texture2D:
+					desc.depth = 1;
+
+					if(dxt10Header.miscFlag & DXGI_MISC_FLAG_CUBEMAP)
+					{
+						desc.type = Cubemap;
+					}
+					else
+					{
+						desc.type = Texture2D;
+					}
+
+					break;
+				case DXGI_Texture3D:
+					desc.type = Texture3D;
+					desc.arraySize = 1; // There are no 3D texture arrays
+					break;
+				default:
+					break;
 			}
 		}
 		else
 		{
-			if(ddspf.flags & DDS_RGB)
+			if(ddspf.flags & DDS_FOURCC)
+			{
+				unsigned int fourCC = ddspf.fourCC;
+
+				switch(fourCC)
+				{
+					// Compressed
+					case FOURCC_DXT1:    desc.format = BC1_UNORM; break;
+					case FOURCC_DXT2:    // fallthrough
+					case FOURCC_DXT3:    desc.format = BC2_UNORM; break;
+					case FOURCC_DXT4:    // fallthrough
+					case FOURCC_DXT5:    desc.format = BC3_UNORM; break;
+					case FOURCC_ATI1:    // fallthrough
+					case FOURCC_BC4U:    desc.format = BC4_UNORM; break;
+					case FOURCC_BC4S:    desc.format = BC4_SNORM; break;
+					case FOURCC_ATI2:    // fallthrough
+					case FOURCC_BC5U:    desc.format = BC5_UNORM; break;
+					case FOURCC_BC5S:    desc.format = BC5_SNORM; break;
+
+						// Video
+					case FOURCC_RGBG:    desc.format = R8G8_B8G8_UNORM; break;
+					case FOURCC_GRBG:    desc.format = G8R8_G8B8_UNORM; break;
+					case FOURCC_YUY2:    desc.format = YUY2; break;
+
+						// Packed
+					case FOURCC_R5G6B5:  desc.format = B5G6R5_UNORM; break;
+					case FOURCC_RGB5A1:  desc.format = B5G5R5A1_UNORM; break;
+					case FOURCC_RGBA4:   desc.format = B4G4R4A4_UNORM; break;
+
+						// Uncompressed
+					case FOURCC_A8:          desc.format = R8_UNORM; break;
+					case FOURCC_A2B10G10R10: desc.format = R10G10B10A2_UNORM; break;
+					case FOURCC_RGBA16U:     desc.format = R16G16B16A16_UNORM; break;
+					case FOURCC_RGBA16S:     desc.format = R16G16B16A16_SNORM; break;
+					case FOURCC_R16F:        desc.format = R16_FLOAT; break;
+					case FOURCC_RG16F:       desc.format = R16G16_FLOAT; break;
+					case FOURCC_RGBA16F:     desc.format = R16G16B16A16_FLOAT; break;
+					case FOURCC_R32F:        desc.format = R32_FLOAT; break;
+					case FOURCC_RG32F:       desc.format = R32G32_FLOAT; break;
+					case FOURCC_RGBA32F:     desc.format = R32G32B32A32_FLOAT; break;
+					default: break;
+				}
+			}
+			else if(ddspf.flags & DDS_RGB)
 			{
 				switch(ddspf.RGBBitCount)
 				{
@@ -808,29 +808,29 @@ namespace ddspp
 			{
 				switch(ddspf.RGBBitCount)
 				{
-					case 16:
-						if (is_rgba_mask(ddspf, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000))
-						{
-							desc.format = R16_UNORM; // D3DX10/11 writes this out as DX10 extension.
-						}
-						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
-						{
-							desc.format = R8G8_UNORM; // D3DX10/11 writes this out as DX10 extension.
-						}
-						break;
-					case 8:
-						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x00000000))
-						{
-							desc.format = R8_UNORM; // D3DX10/11 writes this out as DX10 extension
-						}
+				case 16:
+					if (is_rgba_mask(ddspf, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000))
+					{
+						desc.format = R16_UNORM; // D3DX10/11 writes this out as DX10 extension.
+					}
+					if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
+					{
+						desc.format = R8G8_UNORM; // D3DX10/11 writes this out as DX10 extension.
+					}
+					break;
+				case 8:
+					if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x00000000))
+					{
+						desc.format = R8_UNORM; // D3DX10/11 writes this out as DX10 extension
+					}
 
-						// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
+					// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
 
-						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
-						{
-							desc.format = R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
-						}
-						break;
+					if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
+					{
+						desc.format = R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
+					}
+					break;
 				}
 			}
 			else if (ddspf.flags & DDS_ALPHA)
@@ -863,59 +863,26 @@ namespace ddspp
 					}
 				}
 			}
-		}
 
-		if(header.flags & DDS_HEADER_FLAGS_VOLUME)
-		{
-			desc.type = Texture3D;
-		}
-		else if (header.caps2 & DDS_HEADER_CAPS2_CUBEMAP)
-		{
-			if((header.caps2 & DDS_HEADER_CAPS2_CUBEMAP_ALLFACES) != DDS_HEADER_CAPS2_CUBEMAP_ALLFACES)
+			if((header.flags & DDS_HEADER_FLAGS_VOLUME) || (header.caps2 & DDS_HEADER_CAPS2_VOLUME))
 			{
-				return ddspp::Error;
-			}
-
-			desc.type = Cubemap;
-			desc.arraySize = 1;
-			desc.depth = 1;
-		}
-		else if (header.caps2 & DDS_HEADER_CAPS2_VOLUME)
-		{
-			desc.type = Texture3D;
-		}
-		else if(dxt10Extension)
-		{
-			switch(dxt10Header.resourceDimension)
-			{
-			case DXGI_Texture1D:
-				desc.depth = 1;
-				desc.type = Texture1D;
-				break;
-			case DXGI_Texture2D:
-				desc.depth = 1;
-
-				if(dxt10Header.miscFlag & DXGI_MISC_FLAG_CUBEMAP)
-				{
-					desc.type = Cubemap;
-				}
-				else
-				{
-					desc.type = Texture2D;
-				}
-
-				break;
-			case DXGI_Texture3D:
 				desc.type = Texture3D;
-				desc.arraySize = 1; // There are no 3D texture arrays
-				break;
-			default:
-				break;
 			}
-		}
-		else
-		{
-			desc.type = Texture2D;
+			else if (header.caps2 & DDS_HEADER_CAPS2_CUBEMAP)
+			{
+				if((header.caps2 & DDS_HEADER_CAPS2_CUBEMAP_ALLFACES) != DDS_HEADER_CAPS2_CUBEMAP_ALLFACES)
+				{
+					return ddspp::Error;
+				}
+
+				desc.type = Cubemap;
+				desc.arraySize = 1;
+				desc.depth = 1;
+			}
+			else
+			{
+				desc.type = Texture2D;
+			}
 		}
 
 		desc.compressed = is_compressed(desc.format);

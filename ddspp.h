@@ -6,7 +6,7 @@
 // https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dds-header-dxt10
 // https://learn.microsoft.com/en-us/windows/win32/direct3ddds/dds-pixelformat
 
-#if (__cpp_constexpr == 201304) || (_MSC_VER > 1900)
+#if (__cpp_constexpr >= 201304) || (_MSC_VER > 1900)
 #define ddspp_constexpr constexpr
 #else
 #define ddspp_constexpr const

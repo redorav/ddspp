@@ -622,7 +622,7 @@ namespace ddspp
 		// Shift width by mipmap index, round to next block size and round to next byte (for the rare less than 1 byte per pixel formats)
 		// E.g. width = 119, mip = 3, BC1 compression
 		// ((((119 >> 2) + 4 - 1) / 4) * 64) / 8 = 64 bytes
-		return ((((width >> mip) + blockWidth - 1) / blockWidth) * bitsPerPixelOrBlock + 7) / 8;
+		return ((((((width >> mip) > 1) ? (width >> mip) : 1) + blockWidth - 1) / blockWidth) * bitsPerPixelOrBlock + 7) / 8;
 	}
 
 	// Returns number of bytes for each row of a given mip. Valid range is [0, desc.numMips)

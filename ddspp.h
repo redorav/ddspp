@@ -1005,15 +1005,15 @@ namespace ddspp
 
 		if (desc.type == Texture3D)
 		{
-			for (unsigned int m = 0; m < mip; ++m)
+			for (unsigned int m = 0; m <= mip; ++m)
 			{
-				unsigned long long mipSize = mip0Size >> 2 * m;
-				offset += mipSize * desc.numMips;
+				unsigned int mipWidth = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
+				unsigned long long mipSize = mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
+				offset += mipSize * ((m == mip) ? slice : desc.numMips);
 			}
-
-			unsigned long long lastMip = mip0Size >> 2 * mip;
-
-			offset += lastMip * slice;
 		}
 		else
 		{
@@ -1021,16 +1021,22 @@ namespace ddspp
 
 			for (unsigned int m = 0; m < desc.numMips; ++m)
 			{
-				unsigned long long mipSize = mip0Size >> 2 * m; // Divide by 2 in width and height
-				mipChainSize += mipSize > desc.bitsPerPixelOrBlock ? mipSize : desc.bitsPerPixelOrBlock;
+				unsigned int mipWidth = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
+				mipChainSize += mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
 			}
 
 			offset += mipChainSize * slice;
 
 			for (unsigned int m = 0; m < mip; ++m)
 			{
-				unsigned long long mipSize = mip0Size >> 2 * m; // Divide by 2 in width and height
-				offset += mipSize > desc.bitsPerPixelOrBlock ? mipSize : desc.bitsPerPixelOrBlock;
+				unsigned int mipWidth = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
+				offset += mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
 			}
 		}
 

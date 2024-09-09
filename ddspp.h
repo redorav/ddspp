@@ -617,6 +617,7 @@ namespace ddspp
 		return;
 	}
 
+	// Returns number of bytes for each row of a given mip. Valid range is [0, desc.numMips)
 	inline ddspp_constexpr unsigned int get_row_pitch(unsigned int width, unsigned int bitsPerPixelOrBlock, unsigned int blockWidth, unsigned int mip)
 	{
 		// Shift width by mipmap index, round to next block size and round to next byte (for the rare less than 1 byte per pixel formats)
@@ -625,10 +626,20 @@ namespace ddspp
 		return ((((((width >> mip) > 1) ? (width >> mip) : 1) + blockWidth - 1) / blockWidth) * bitsPerPixelOrBlock + 7) / 8;
 	}
 
-	// Returns number of bytes for each row of a given mip. Valid range is [0, desc.numMips)
 	inline ddspp_constexpr unsigned int get_row_pitch(const Descriptor& desc, unsigned int mip)
 	{
 		return get_row_pitch(desc.width, desc.bitsPerPixelOrBlock, desc.blockWidth, mip);
+	}
+
+	// Return the height for a given mip in either pixels or blocks depending on whether the format is compressed
+	inline ddspp_constexpr unsigned int get_height_pixels_blocks(const unsigned int height, const unsigned int blockHeight, const unsigned int mip)
+	{
+		return ((height / blockHeight) >> mip) ? ((height / blockHeight) >> mip) : 1;
+	}
+
+	inline ddspp_constexpr unsigned int get_height_pixels_blocks(const Descriptor& desc, const unsigned int mip)
+	{
+		return get_height_pixels_blocks(desc.height, desc.blockHeight, mip);
 	}
 
 	inline Result decode_header(unsigned char* sourceData, Descriptor& desc)

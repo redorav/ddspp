@@ -1001,7 +1001,6 @@ namespace ddspp
 		//
 
 		unsigned long long offset = 0;
-		unsigned long long mip0Size = desc.depthPitch * 8; // Work in bits
 
 		if (desc.type == Texture3D)
 		{

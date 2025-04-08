@@ -59,6 +59,15 @@ namespace ddspp
 		static ddspp_constexpr unsigned int DXGI_MISC_FLAG_CUBEMAP = 0x4; // https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_resource_misc_flag
 		static ddspp_constexpr unsigned int DDS_MISC_FLAGS2_ALPHA_MODE_MASK = 0x7;
 
+		enum DXGIAlphaMode : unsigned int
+		{
+			DDS_ALPHA_MODE_UNKNOWN       = 0,
+			DDS_ALPHA_MODE_STRAIGHT      = 1,
+			DDS_ALPHA_MODE_PREMULTIPLIED = 2,
+			DDS_ALPHA_MODE_OPAQUE        = 3,
+			DDS_ALPHA_MODE_CUSTOM        = 4
+		};
+
 		#define ddspp_make_fourcc(a, b, c, d) ((a) + ((b) << 8) + ((c) << 16) + ((d) << 24))
 
 		// FOURCC constants
@@ -350,7 +359,7 @@ namespace ddspp
 		DXGIResourceDimension resourceDimension;
 		unsigned int miscFlag;
 		unsigned int arraySize;
-		unsigned int reserved;
+		unsigned int miscFlags2;
 	};
 
 	static_assert(sizeof(HeaderDXT10) == 20, "DDS DX10 Extended Header size mismatch");
@@ -621,7 +630,7 @@ namespace ddspp
 		return;
 	}
 
-	bool has_alpha(DXGIFormat format)
+	bool has_alpha_channel(DXGIFormat format)
 	{
 		switch(format)
 		{
@@ -878,29 +887,29 @@ namespace ddspp
 			{
 				switch(ddspf.RGBBitCount)
 				{
-				case 16:
-					if (is_rgba_mask(ddspf, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000))
-					{
-						desc.format = R16_UNORM; // D3DX10/11 writes this out as DX10 extension.
-					}
-					if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
-					{
-						desc.format = R8G8_UNORM; // D3DX10/11 writes this out as DX10 extension.
-					}
-					break;
-				case 8:
-					if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x00000000))
-					{
-						desc.format = R8_UNORM; // D3DX10/11 writes this out as DX10 extension
-					}
+					case 16:
+						if (is_rgba_mask(ddspf, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000))
+						{
+							desc.format = R16_UNORM; // D3DX10/11 writes this out as DX10 extension.
+						}
+						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
+						{
+							desc.format = R8G8_UNORM; // D3DX10/11 writes this out as DX10 extension.
+						}
+						break;
+					case 8:
+						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x00000000))
+						{
+							desc.format = R8_UNORM; // D3DX10/11 writes this out as DX10 extension
+						}
 
-					// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
+						// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
 
-					if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
-					{
-						desc.format = R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
-					}
-					break;
+						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
+						{
+							desc.format = R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
+						}
+						break;
 				}
 			}
 			else if (ddspf.flags & DDS_ALPHA)
@@ -967,7 +976,7 @@ namespace ddspp
 		return ddspp::Success;
 	}
 
-	inline void encode_header(const DXGIFormat format, const unsigned int width, const unsigned int height, const unsigned int depth,
+	inline void encode_header(const DXGIFormat dxgiFormat, const unsigned int width, const unsigned int height, const unsigned int depth,
 	                          const TextureType type, const unsigned int mipCount, const unsigned int arraySize, 
 	                          Header& header, HeaderDXT10& dxt10Header)
 	{
@@ -984,13 +993,13 @@ namespace ddspp
 			header.caps |= DDS_HEADER_CAPS_COMPLEX | DDS_HEADER_CAPS_MIPMAP;
 		}
 
-		unsigned int bitsPerPixelOrBlock = get_bits_per_pixel_or_block(format);
+		unsigned int bitsPerPixelOrBlock = get_bits_per_pixel_or_block(dxgiFormat);
 
-		if (is_compressed(format))
+		if (is_compressed(dxgiFormat))
 		{
 			header.flags |= DDS_HEADER_FLAGS_LINEARSIZE;
 			unsigned int blockWidth, blockHeight;
-			get_block_size(format, blockWidth, blockHeight);
+			get_block_size(dxgiFormat, blockWidth, blockHeight);
 			header.pitchOrLinearSize = width * height * bitsPerPixelOrBlock / (8 * blockWidth * blockHeight);
 		}
 		else
@@ -1015,7 +1024,7 @@ namespace ddspp
 		ddspf.flags = 0;
 		ddspf.flags |= DDS_FOURCC;
 
-		dxt10Header.dxgiFormat = format;
+		dxt10Header.dxgiFormat = dxgiFormat;
 		dxt10Header.arraySize = arraySize;
 		dxt10Header.miscFlag = 0;
 		
@@ -1041,7 +1050,10 @@ namespace ddspp
 			header.caps2 |= DDS_HEADER_CAPS2_VOLUME;
 		}
 
-		// dxt10Header.miscFlag TODO Alpha Mode
+		// I don't think this gives us a lot of information unless we can supply it externally. It's metadata related to how the alpha
+		// channel has been factored into the texture. The format already gives us a lot to go on; the situations where this is ambiguous
+		// are BC1_UNORM (1-bit alpha) and premultiplied. None of them can be deduced from the data we are being supplied currently
+		dxt10Header.miscFlags2 = DDS_ALPHA_MODE_UNKNOWN;
 
 		// Unused
 		header.caps3 = 0;

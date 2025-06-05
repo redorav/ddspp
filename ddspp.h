@@ -270,6 +270,13 @@ namespace ddspp
 		P8                          = 113,
 		A8P8                        = 114,
 		B4G4R4A4_UNORM              = 115,
+
+		// Xbox-specific
+		R10G10B10_7E3_A2_FLOAT      = 116,
+		R10G10B10_6E4_A2_FLOAT      = 117,
+		D16_UNORM_S8_UINT           = 118,
+		R16_UNORM_X8_TYPELESS       = 119,
+		X16_TYPELESS_G8_UINT        = 120,
 		
 		P208                        = 130,
 		V208                        = 131,
@@ -327,6 +334,10 @@ namespace ddspp
 		ASTC_12X12_TYPELESS         = 185,
 		ASTC_12X12_UNORM            = 186,
 		ASTC_12X12_UNORM_SRGB       = 187,
+
+		// Xbox-specific
+		R10G10B10_SNORM_A2_UNORM    = 189,
+		R4G4_UNORM                  = 190,
 
 		A4B4G4R4_UNORM              = 191,
 
@@ -464,6 +475,7 @@ namespace ddspp
 			case AI44:
 			case IA44:
 			case P8:
+			case R4G4_UNORM:
 				return 8;
 			case NV12:
 			case OPAQUE_420:
@@ -488,6 +500,9 @@ namespace ddspp
 				return 16;
 			case P010:
 			case P016:
+			case D16_UNORM_S8_UINT:
+			case R16_UNORM_X8_TYPELESS:
+			case X16_TYPELESS_G8_UINT:
 				return 24;
 			case BC1_UNORM:
 			case BC1_UNORM_SRGB:
@@ -678,6 +693,9 @@ namespace ddspp
 			case IA44:
 			case A8P8:
 			case B4G4R4A4_UNORM:
+			case R10G10B10_7E3_A2_FLOAT:
+			case R10G10B10_6E4_A2_FLOAT:
+			case R10G10B10_SNORM_A2_UNORM:
 			case A4B4G4R4_UNORM:
 				return true;
 			default:

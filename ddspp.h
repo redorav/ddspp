@@ -984,7 +984,7 @@ namespace ddspp
 
 		desc.compressed = is_compressed(desc.format);
 		desc.srgb = is_srgb(desc.format);
-		desc.bitsPerPixelOrBlock = get_bits_per_pixel_or_block(desc.format);
+		desc.bitsPerPixelOrBlock = desc.compressed ? get_bits_per_pixel_or_block(desc.format) : ddspf.RGBBitCount;
 		get_block_size(desc.format, desc.blockWidth, desc.blockHeight);
 		
 		desc.rowPitch = get_row_pitch(desc.width, desc.bitsPerPixelOrBlock, desc.blockWidth, 0);

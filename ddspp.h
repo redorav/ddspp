@@ -645,7 +645,7 @@ namespace ddspp
 		return;
 	}
 
-	bool has_alpha_channel(DXGIFormat format)
+	inline bool has_alpha_channel(DXGIFormat format)
 	{
 		switch(format)
 		{
@@ -1079,40 +1079,94 @@ namespace ddspp
 		header.reserved2 = 0;
 	}
 
-	// Returns the offset from the base pointer to the desired mip and slice
+	// The mip/slice arrangement is different between texture arrays and volume textures
+	//
+	// Arrays
+	//  __________  _____  __  __________  _____  __  __________  _____  __ 
+	// |          ||     ||__||          ||     ||__||          ||     ||__|
+	// |          ||_____|    |          ||_____|    |          ||_____|
+	// |          |           |          |           |          |
+	// |__________|           |__________|           |__________|
+	//
+	// Volume
+	//  __________  __________  __________  __________  _____  _____  __ 
+	// |          ||          ||          ||          ||     ||     ||__|
+	// |          ||          ||          ||          ||_____||_____|
+	// |          ||          ||          ||          |
+	// |__________||__________||__________||__________|
+	//
+
+	// Returns the size in bytes of the entire texture
+	inline ddspp_constexpr unsigned int get_size(const Descriptor& desc)
+	{
+		unsigned long long size = 0;
+
+		if (desc.type == Texture3D)
+		{
+			for (unsigned int m = 0; m < desc.numMips; ++m)
+			{
+				unsigned int mipWidth        = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight       = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipDepth        = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth  = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
+				unsigned long long mipSize = mipBlocksWidth * mipBlocksHeight * mipDepth * desc.bitsPerPixelOrBlock;
+				size += mipSize;
+			}
+		}
+		else
+		{
+			for (unsigned int m = 0; m < desc.numMips; ++m)
+			{
+				unsigned int mipWidth        = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight       = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth  = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
+				unsigned long long mipSize   = mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
+				size += mipSize;
+			}
+
+			size *= desc.arraySize;
+		}
+
+		size /= 8;
+
+		return (unsigned int)size;
+	}
+
+	// Returns the offset in bytes from the base pointer to the desired mip and slice
 	// Slice is either a texture from an array, a face from a cubemap, or a 2D slice of a volume texture
+	// Be careful when specifying the slice of a volume texture, as every mip has half the slices of the previous
+	// For example, in a 64x64x64 texture, get_offset(desc, 1, 63) is incorrectly specified
 	inline ddspp_constexpr unsigned int get_offset(const Descriptor& desc, const unsigned int mip, const unsigned int slice)
 	{
-		// The mip/slice arrangement is different between texture arrays and volume textures
-		//
-		// Arrays
-		//  __________  _____  __  __________  _____  __  __________  _____  __ 
-		// |          ||     ||__||          ||     ||__||          ||     ||__|
-		// |          ||_____|    |          ||_____|    |          ||_____|
-		// |          |           |          |           |          |
-		// |__________|           |__________|           |__________|
-		//
-		// Volume
-		//  __________  __________  __________  _____  _____  _____  __  __  __ 
-		// |          ||          ||          ||     ||     ||     ||__||__||__|
-		// |          ||          ||          ||_____||_____||_____|
-		// |          ||          ||          |
-		// |__________||__________||__________|
-		//
-
 		unsigned long long offset = 0;
 
 		if (desc.type == Texture3D)
 		{
-			for (unsigned int m = 0; m <= mip; ++m)
+			unsigned long long mipChainSize = 0;
+
+			for (unsigned int m = 0; m < mip; ++m)
 			{
-				unsigned int mipWidth = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
-				unsigned int mipHeight = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
-				unsigned int mipBlocksWidth = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipWidth        = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight       = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipDepth        = (desc.depth >> m) > 1 ? (desc.depth >> m) : 1;
+				unsigned int mipBlocksWidth  = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
 				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
-				unsigned long long mipSize = mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
-				offset += mipSize * ((m == mip) ? slice : desc.numMips);
+				unsigned long long mipSize   = mipBlocksWidth * mipBlocksHeight * mipDepth * desc.bitsPerPixelOrBlock;
+				mipChainSize += mipSize;
 			}
+
+			offset += mipChainSize;
+
+			unsigned int lastMipWidth        = (desc.width >> mip) > 1 ? (desc.width >> mip) : 1;
+			unsigned int lastMipHeight       = (desc.height >> mip) > 1 ? (desc.height >> mip) : 1;
+			unsigned int lastMipDepth        = (desc.depth >> mip) > 1 ? (desc.depth >> mip) : 1;
+			unsigned int lastMipBlocksWidth  = (lastMipWidth + desc.blockWidth - 1) / desc.blockWidth;
+			unsigned int lastMipBlocksHeight = (lastMipHeight + desc.blockHeight - 1) / desc.blockHeight;
+			unsigned long long lastMipSize   = lastMipBlocksWidth * lastMipBlocksHeight * lastMipDepth * desc.bitsPerPixelOrBlock;
+
+			offset += lastMipSize * slice;
 		}
 		else
 		{
@@ -1120,9 +1174,9 @@ namespace ddspp
 
 			for (unsigned int m = 0; m < desc.numMips; ++m)
 			{
-				unsigned int mipWidth = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
-				unsigned int mipHeight = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
-				unsigned int mipBlocksWidth = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipWidth        = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight       = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth  = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
 				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
 				mipChainSize += mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
 			}
@@ -1131,9 +1185,9 @@ namespace ddspp
 
 			for (unsigned int m = 0; m < mip; ++m)
 			{
-				unsigned int mipWidth = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
-				unsigned int mipHeight = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
-				unsigned int mipBlocksWidth = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
+				unsigned int mipWidth        = (desc.width >> m) > 1 ? (desc.width >> m) : 1;
+				unsigned int mipHeight       = (desc.height >> m) > 1 ? (desc.height >> m) : 1;
+				unsigned int mipBlocksWidth  = (mipWidth + desc.blockWidth - 1) / desc.blockWidth;
 				unsigned int mipBlocksHeight = (mipHeight + desc.blockHeight - 1) / desc.blockHeight;
 				offset += mipBlocksWidth * mipBlocksHeight * desc.bitsPerPixelOrBlock;
 			}

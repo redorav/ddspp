@@ -12,6 +12,21 @@
 #define ddspp_constexpr const
 #endif
 
+#if defined(_MSC_VER)
+
+	#define ddspp_warning_underlying_enum_type_begin \
+		__pragma(warning(push)) \
+		__pragma(warning(disable : 4480))
+		
+	#define ddspp_warning_underlying_enum_type_end __pragma(warning(pop))
+
+#else
+	#define ddspp_warning_underlying_enum_type_begin
+	#define ddspp_warning_underlying_enum_type_end
+#endif
+
+ddspp_warning_underlying_enum_type_begin
+
 namespace ddspp
 {
 	namespace internal
@@ -1198,3 +1213,5 @@ namespace ddspp
 		return (unsigned int)offset;
 	}
 }
+
+ddspp_warning_underlying_enum_type_end

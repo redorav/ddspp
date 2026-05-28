@@ -612,46 +612,57 @@ namespace ddspp
 			case ASTC_6X5_UNORM:
 			case ASTC_6X5_UNORM_SRGB:
 				blockWidth = 6; blockHeight = 5;
+				break;
 			case ASTC_6X6_TYPELESS:
 			case ASTC_6X6_UNORM:
 			case ASTC_6X6_UNORM_SRGB:
 				blockWidth = 6; blockHeight = 6;
+				break;
 			case ASTC_8X5_TYPELESS:
 			case ASTC_8X5_UNORM:
 			case ASTC_8X5_UNORM_SRGB:
 				blockWidth = 8; blockHeight = 5;
+				break;
 			case ASTC_8X6_TYPELESS:
 			case ASTC_8X6_UNORM:
 			case ASTC_8X6_UNORM_SRGB:
 				blockWidth = 8; blockHeight = 6;
+				break;
 			case ASTC_8X8_TYPELESS:
 			case ASTC_8X8_UNORM:
 			case ASTC_8X8_UNORM_SRGB:
 				blockWidth = 8; blockHeight = 8;
+				break;
 			case ASTC_10X5_TYPELESS:
 			case ASTC_10X5_UNORM:
 			case ASTC_10X5_UNORM_SRGB:
 				blockWidth = 10; blockHeight = 5;
+				break;
 			case ASTC_10X6_TYPELESS:
 			case ASTC_10X6_UNORM:
 			case ASTC_10X6_UNORM_SRGB:
 				blockWidth = 10; blockHeight = 6;
+				break;
 			case ASTC_10X8_TYPELESS:
 			case ASTC_10X8_UNORM:
 			case ASTC_10X8_UNORM_SRGB:
 				blockWidth = 10; blockHeight = 8;
+				break;
 			case ASTC_10X10_TYPELESS:
 			case ASTC_10X10_UNORM:
 			case ASTC_10X10_UNORM_SRGB:
 				blockWidth = 10; blockHeight = 10;
+				break;
 			case ASTC_12X10_TYPELESS:
 			case ASTC_12X10_UNORM:
 			case ASTC_12X10_UNORM_SRGB:
 				blockWidth = 12; blockHeight = 10;
+				break;
 			case ASTC_12X12_TYPELESS:
 			case ASTC_12X12_UNORM:
 			case ASTC_12X12_UNORM_SRGB:
 				blockWidth = 12; blockHeight = 12;
+				break;
 			default:
 				blockWidth = 1; blockHeight = 1;
 				break;

@@ -33,18 +33,30 @@ namespace ddspp
 	{
 		static ddspp_constexpr unsigned int DDS_MAGIC      = 0x20534444;
 
-		static ddspp_constexpr unsigned int DDS_ALPHAPIXELS = 0x00000001;
-		static ddspp_constexpr unsigned int DDS_ALPHA       = 0x00000002; // DDPF_ALPHA
-		static ddspp_constexpr unsigned int DDS_FOURCC      = 0x00000004; // DDPF_FOURCC
-		static ddspp_constexpr unsigned int DDS_RGB         = 0x00000040; // DDPF_RGB
-		static ddspp_constexpr unsigned int DDS_RGBA        = 0x00000041; // DDPF_RGB | DDPF_ALPHAPIXELS
-		static ddspp_constexpr unsigned int DDS_YUV         = 0x00000200; // DDPF_YUV
-		static ddspp_constexpr unsigned int DDS_LUMINANCE   = 0x00020000; // DDPF_LUMINANCE
-		static ddspp_constexpr unsigned int DDS_LUMINANCEA  = 0x00020001; // DDPF_LUMINANCE | DDPF_ALPHAPIXELS
+		static ddspp_constexpr unsigned int DDS_ALPHAPIXELS       = 0x00000001; // DDPF_ALPHAPIXELS
+		static ddspp_constexpr unsigned int DDS_ALPHA             = 0x00000002; // DDPF_ALPHA
+		static ddspp_constexpr unsigned int DDS_FOURCC            = 0x00000004; // DDPF_FOURCC
+		static ddspp_constexpr unsigned int DDS_PALETTEINDEXED4   = 0x00000008; // DDPF_PALETTEINDEXED4
+		static ddspp_constexpr unsigned int DDS_PALETTEINDEXEDTO8 = 0x00000010; // DDPF_PALETTEINDEXEDTO8
+		static ddspp_constexpr unsigned int DDS_PALETTEINDEXED8   = 0x00000020; // DDPF_PALETTEINDEXED8
+		static ddspp_constexpr unsigned int DDS_RGB               = 0x00000040; // DDPF_RGB
+		static ddspp_constexpr unsigned int DDS_COMPRESSED        = 0x00000080; // DDPF_COMPRESSED
+		static ddspp_constexpr unsigned int DDS_RGBTOYUV          = 0x00000100; // DDPF_RGBTOYUV
+		static ddspp_constexpr unsigned int DDS_YUV               = 0x00000200; // DDPF_YUV
+		static ddspp_constexpr unsigned int DDS_ZBUFFER           = 0x00000400; // DDPF_ZBUFFER
+		static ddspp_constexpr unsigned int DDS_PALETTEINDEXED1   = 0x00000800; // DDPF_PALETTEINDEXED1
+		static ddspp_constexpr unsigned int DDS_PALETTEINDEXED2   = 0x00001000; // DDPF_PALETTEINDEXED2
+		static ddspp_constexpr unsigned int DDS_ZPIXELS           = 0x00002000; // DDPF_ZPIXELS
+		static ddspp_constexpr unsigned int DDS_STENCILBUFFER     = 0x00004000; // DDPF_STENCILBUFFER
+		static ddspp_constexpr unsigned int DDS_ALPHAPREMULT      = 0x00008000; // DDPF_ALPHAPREMULT
+		static ddspp_constexpr unsigned int DDS_LUMINANCE         = 0x00020000; // DDPF_LUMINANCE
+		static ddspp_constexpr unsigned int DDS_BUMPLUMINANCE     = 0x00040000; // DDPF_BUMPLUMINANCE
+		static ddspp_constexpr unsigned int DDS_BUMPDUDV          = 0x00080000; // DDPF_BUMPDUDV
 		
-		static ddspp_constexpr unsigned int DDS_PAL8       = 0x00000020; // DDPF_PALETTEINDEXED8
-		static ddspp_constexpr unsigned int DDS_PAL8A      = 0x00000020; // DDPF_PALETTEINDEXED8 | DDPF_ALPHAPIXELS
-		static ddspp_constexpr unsigned int DDS_BUMPDUDV   = 0x00080000; // DDPF_BUMPDUDV
+		// Composite flags
+		static ddspp_constexpr unsigned int DDS_RGBA              = DDS_RGB | DDS_ALPHA;
+		static ddspp_constexpr unsigned int DDS_PALETTEINDEXED8A  = DDS_PALETTEINDEXED8 | DDS_ALPHAPIXELS;
+		static ddspp_constexpr unsigned int DDS_LUMINANCEA        = DDS_LUMINANCE | DDS_ALPHAPIXELS;
 
 		static ddspp_constexpr unsigned int DDS_HEADER_FLAGS_CAPS        = 0x00000001; // DDSD_CAPS
 		static ddspp_constexpr unsigned int DDS_HEADER_FLAGS_HEIGHT      = 0x00000002; // DDSD_HEIGHT
@@ -85,55 +97,72 @@ namespace ddspp
 
 		#define ddspp_make_fourcc(a, b, c, d) ((a) + ((b) << 8) + ((c) << 16) + ((d) << 24))
 
-		// FOURCC constants
-		static ddspp_constexpr unsigned int FOURCC_DXT1 = ddspp_make_fourcc('D', 'X', 'T', '1'); // BC1_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT2 = ddspp_make_fourcc('D', 'X', 'T', '2'); // BC2_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT3 = ddspp_make_fourcc('D', 'X', 'T', '3'); // BC2_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT4 = ddspp_make_fourcc('D', 'X', 'T', '4'); // BC3_UNORM
-		static ddspp_constexpr unsigned int FOURCC_DXT5 = ddspp_make_fourcc('D', 'X', 'T', '5'); // BC3_UNORM
-		static ddspp_constexpr unsigned int FOURCC_ATI1 = ddspp_make_fourcc('A', 'T', 'I', '1'); // BC4_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC4U = ddspp_make_fourcc('B', 'C', '4', 'U'); // BC4_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC4S = ddspp_make_fourcc('B', 'C', '4', 'S'); // BC4_SNORM
-		static ddspp_constexpr unsigned int FOURCC_ATI2 = ddspp_make_fourcc('A', 'T', 'I', '2'); // BC5_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC5U = ddspp_make_fourcc('B', 'C', '5', 'U'); // BC5_UNORM
-		static ddspp_constexpr unsigned int FOURCC_BC5S = ddspp_make_fourcc('B', 'C', '5', 'S'); // BC5_SNORM
-		static ddspp_constexpr unsigned int FOURCC_RGBG = ddspp_make_fourcc('R', 'G', 'B', 'G'); // R8G8_B8G8_UNORM
-		static ddspp_constexpr unsigned int FOURCC_GRBG = ddspp_make_fourcc('G', 'R', 'G', 'B'); // G8R8_G8B8_UNORM
-		static ddspp_constexpr unsigned int FOURCC_YUY2 = ddspp_make_fourcc('Y', 'U', 'Y', '2'); // YUY2
-		static ddspp_constexpr unsigned int FOURCC_UYVY = ddspp_make_fourcc('U', 'Y', 'V', 'Y'); // UYVY
-		static ddspp_constexpr unsigned int FOURCC_DXT10 = ddspp_make_fourcc('D', 'X', '1', '0'); // DDS extension header
+		namespace FourCC
+		{
+			enum T : unsigned int
+			{
+				DXT1 = ddspp_make_fourcc('D', 'X', 'T', '1'), // BC1_UNORM
+				DXT2 = ddspp_make_fourcc('D', 'X', 'T', '2'), // BC2_UNORM
+				DXT3 = ddspp_make_fourcc('D', 'X', 'T', '3'), // BC2_UNORM
+				DXT4 = ddspp_make_fourcc('D', 'X', 'T', '4'), // BC3_UNORM
+				DXT5 = ddspp_make_fourcc('D', 'X', 'T', '5'), // BC3_UNORM
+				ATI1 = ddspp_make_fourcc('A', 'T', 'I', '1'), // BC4_UNORM
+				BC4U = ddspp_make_fourcc('B', 'C', '4', 'U'), // BC4_UNORM
+				BC4S = ddspp_make_fourcc('B', 'C', '4', 'S'), // BC4_SNORM
+				ATI2 = ddspp_make_fourcc('A', 'T', 'I', '2'), // BC5_UNORM
+				BC5U = ddspp_make_fourcc('B', 'C', '5', 'U'), // BC5_UNORM
+				BC5S = ddspp_make_fourcc('B', 'C', '5', 'S'), // BC5_SNORM
+				RGBG = ddspp_make_fourcc('R', 'G', 'B', 'G'), // R8G8_B8G8_UNORM
+				GRGB = ddspp_make_fourcc('G', 'R', 'G', 'B'), // G8R8_G8B8_UNORM
+				YUY2 = ddspp_make_fourcc('Y', 'U', 'Y', '2'), // YUY2
+				UYVY = ddspp_make_fourcc('U', 'Y', 'V', 'Y'), // UYVY
+				DX10 = ddspp_make_fourcc('D', 'X', '1', '0'), // DDS extension header
 
-		// These values come from the original D3D9 D3DFORMAT values https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
-		static ddspp_constexpr unsigned int FOURCC_RGB8        =  20;
-		static ddspp_constexpr unsigned int FOURCC_A8R8G8B8    =  21;
-		static ddspp_constexpr unsigned int FOURCC_X8R8G8B8    =  22;
-		static ddspp_constexpr unsigned int FOURCC_R5G6B5      =  23; // B5G6R5_UNORM   (needs swizzling)
-		static ddspp_constexpr unsigned int FOURCC_X1R5G5B5    =  24;
-		static ddspp_constexpr unsigned int FOURCC_RGB5A1      =  25; // B5G5R5A1_UNORM (needs swizzling)
-		static ddspp_constexpr unsigned int FOURCC_RGBA4       =  26; // B4G4R4A4_UNORM (needs swizzling)
-		static ddspp_constexpr unsigned int FOURCC_R3G3B2      =  27;
-		static ddspp_constexpr unsigned int FOURCC_A8          =  28;
-		static ddspp_constexpr unsigned int FOURCC_A8R3G3B2    =  29;
-		static ddspp_constexpr unsigned int FOURCC_X4R4G4B4    =  30;
-		static ddspp_constexpr unsigned int FOURCC_A2B10G10R10 =  31;
-		static ddspp_constexpr unsigned int FOURCC_A8B8G8R8    =  32;
-		static ddspp_constexpr unsigned int FOURCC_X8B8G8R8    =  33;
-		static ddspp_constexpr unsigned int FOURCC_G16R16      =  34;
-		static ddspp_constexpr unsigned int FOURCC_A2R10G10B10 =  35;
-		static ddspp_constexpr unsigned int FOURCC_RGBA16U     =  36; // R16G16B16A16_UNORM
-		static ddspp_constexpr unsigned int FOURCC_RGBA16S     = 110; // R16G16B16A16_SNORM
-		static ddspp_constexpr unsigned int FOURCC_R16F        = 111; // R16_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RG16F       = 112; // R16G16_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RGBA16F     = 113; // R16G16B16A16_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_R32F        = 114; // R32_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RG32F       = 115; // R32G32_FLOAT
-		static ddspp_constexpr unsigned int FOURCC_RGBA32F     = 116; // R32G32B32A32_FLOAT
+				R8G8B8 = 20,
+				A8R8G8B8 = 21,
+				X8R8G8B8 = 22,
+				R5G6B5 = 23,
+				X1R5G5B5 = 24,
+				A1R5G5B5 = 25,
+				A4R4G4B4 = 26,
+				R3G3B2 = 27,
+				A8 = 28,
+				A8R3G3B2 = 29,
+				X4R4G4B4 = 30,
+				A2B10G10R10 = 31,
+				A8B8G8R8 = 32,
+				X8B8G8R8 = 33,
+				G16R16 = 34,
+				A2R10G10B10 = 35,
+				A16B16G16R16 = 36,
+
+				L8 = 50,
+				A8L8 = 51,
+				A4L4 = 52,
+
+				V8U8 = 60,
+				Q8W8V8U8 = 63,
+				V16U16 = 64,
+
+				A2W10V10U10 = 67,
+
+				L16 = 81,
+
+				Q16W16V16U16 = 110,
+				R16F = 111,
+				R16G16F = 112,
+				A16B16G16R16F = 113,
+				R32F = 114,
+				R32G32F = 115,
+				A32B32G32R32F = 116,
+			};
+		};
 
 		struct PixelFormat
 		{
 			unsigned int size;
 			unsigned int flags;
-			unsigned int fourCC;
+			FourCC::T fourCC;
 			unsigned int RGBBitCount;
 			unsigned int RBitMask;
 			unsigned int GBitMask;
@@ -141,16 +170,67 @@ namespace ddspp
 			unsigned int ABitMask;
 		};
 
+		static ddspp_constexpr PixelFormat PF_DXT1          = { 32, DDS_FOURCC,     FourCC::DXT1, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT2          = { 32, DDS_FOURCC,     FourCC::DXT2, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT3          = { 32, DDS_FOURCC,     FourCC::DXT3, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT4          = { 32, DDS_FOURCC,     FourCC::DXT4, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT5          = { 32, DDS_FOURCC,     FourCC::DXT5, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_ATI1          = { 32, DDS_FOURCC,     FourCC::ATI1, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC4U          = { 32, DDS_FOURCC,     FourCC::BC4U, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC4S          = { 32, DDS_FOURCC,     FourCC::BC4S, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_ATI2          = { 32, DDS_FOURCC,     FourCC::ATI2, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC5U          = { 32, DDS_FOURCC,     FourCC::BC5U, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC5S          = { 32, DDS_FOURCC,     FourCC::BC5S, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_RGBG          = { 32, DDS_FOURCC,     FourCC::RGBG, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_GRBG          = { 32, DDS_FOURCC,     FourCC::GRGB, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_YUY2          = { 32, DDS_FOURCC,     FourCC::YUY2, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_UYVY          = { 32, DDS_FOURCC,     FourCC::UYVY, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT10         = { 32, DDS_FOURCC,     FourCC::DX10, 0, 0, 0, 0, 0 };
+
+		// The FOURCC codes come from the original D3D9 D3DFORMAT values https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
+		static ddspp_constexpr PixelFormat PF_R8G8B8        = { 32, DDS_RGB,        FourCC::R8G8B8,         24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A8R8G8B8      = { 32, DDS_RGBA,       FourCC::A8R8G8B8,       32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 };
+		static ddspp_constexpr PixelFormat PF_X8R8G8B8      = { 32, DDS_RGB,        FourCC::X8R8G8B8,       24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_R5G6B5        = { 32, DDS_RGB,        FourCC::R5G6B5,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 }; // B5G6R5_UNORM   (needs swizzling)
+		static ddspp_constexpr PixelFormat PF_X1R5G5B5      = { 32, DDS_RGB,        FourCC::X1R5G5B5,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A1R5G5B5      = { 32, DDS_RGBA,       FourCC::A1R5G5B5,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000 }; // B5G5R5A1_UNORM (needs swizzling)
+		static ddspp_constexpr PixelFormat PF_A4R4G4B4      = { 32, DDS_RGBA,       FourCC::A4R4G4B4,       16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000 }; // B4G4R4A4_UNORM (needs swizzling)
+		static ddspp_constexpr PixelFormat PF_R3G3B2        = { 32, DDS_RGB,        FourCC::R3G3B2,          8, 0x000000e0, 0x0000001c, 0x00000003, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A8            = { 32, DDS_ALPHA,      FourCC::A8,              8, 0x00000000, 0x00000000, 0x00000000, 0x000000ff };
+		static ddspp_constexpr PixelFormat PF_A8R3G3B2      = { 32, DDS_RGBA,       FourCC::A8R3G3B2,       16, 0x000000e0, 0x0000001c, 0x00000003, 0x0000ff00 };
+		static ddspp_constexpr PixelFormat PF_X4R4G4B4      = { 32, DDS_RGB,        FourCC::X4R4G4B4,       16, 0x00000f00, 0x000000f0, 0x0000000f, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A2B10G10R10   = { 32, DDS_RGBA,       FourCC::A2B10G10R10,    32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000 };
+		static ddspp_constexpr PixelFormat PF_A8B8G8R8      = { 32, DDS_RGBA,       FourCC::A8B8G8R8,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
+		static ddspp_constexpr PixelFormat PF_X8B8G8R8      = { 32, DDS_RGB,        FourCC::X8B8G8R8,       24, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_G16R16        = { 32, DDS_RGB,        FourCC::G16R16,         32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A2R10G10B10   = { 32, DDS_RGBA,       FourCC::A2R10G10B10,    32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000 };
+		static ddspp_constexpr PixelFormat PF_A16B16G16R16  = { 32, DDS_RGBA,       FourCC::A16B16G16R16,   64, 0, 0, 0, 0 }; // R16G16B16A16_UNORM
+
+		static ddspp_constexpr PixelFormat PF_L8            = { 32, DDS_LUMINANCE,  FourCC::L8  ,            8, 0x000000ff, 0x00000000, 0x00000000, 0x00000000 }; // R8_UNORM
+		static ddspp_constexpr PixelFormat PF_A8L8          = { 32, DDS_LUMINANCEA, FourCC::A8L8,           16, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00 }; // R8G8_UNORM
+		static ddspp_constexpr PixelFormat PF_A4L4          = { 32, DDS_LUMINANCEA, FourCC::A4L4,           16, 0x0000000f, 0x00000000, 0x00000000, 0x000000f0 };
+
+		static ddspp_constexpr PixelFormat PF_V8U8          = { 32, DDS_BUMPDUDV,   FourCC::V8U8,           16, 0x000000ff, 0x0000ff00, 0x00000000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_Q8W8V8U8      = { 32, DDS_BUMPDUDV,   FourCC::Q8W8V8U8,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
+		static ddspp_constexpr PixelFormat PF_V16U16        = { 32, DDS_BUMPDUDV,   FourCC::V16U16,         32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
+
+		static ddspp_constexpr PixelFormat PF_A2W10V10U10   = { 32, DDS_RGBA,       FourCC::A2W10V10U10,    32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000 };
+
+		static ddspp_constexpr PixelFormat PF_L16           = { 32, DDS_LUMINANCE,  FourCC::L16,            16, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000 }; // R16_UNORM
+
+		static ddspp_constexpr PixelFormat PF_Q16W16V16U16  = { 32, DDS_RGBA,       FourCC::Q16W16V16U16,   64, 0, 0, 0, 0 }; // R16G16B16A16_SNORM
+		static ddspp_constexpr PixelFormat PF_R16F          = { 32, DDS_RGB,        FourCC::R16F,           16, 0, 0, 0, 0 }; // R16_FLOAT
+		static ddspp_constexpr PixelFormat PF_R16G16F       = { 32, DDS_RGB,        FourCC::R16G16F,        32, 0, 0, 0, 0 }; // R16G16_FLOAT
+		static ddspp_constexpr PixelFormat PF_A16B16G16R16F = { 32, DDS_RGBA,       FourCC::A16B16G16R16F,  64, 0, 0, 0, 0 }; // R16G16B16A16_FLOAT
+		static ddspp_constexpr PixelFormat PF_R32F          = { 32, DDS_RGB,        FourCC::R32F,           32, 0, 0, 0, 0 }; // R32_FLOAT
+		static ddspp_constexpr PixelFormat PF_R32G32F       = { 32, DDS_RGB,        FourCC::R32G32F,        64, 0, 0, 0, 0 }; // R32G32_FLOAT
+		static ddspp_constexpr PixelFormat PF_A32B32G32R32F = { 32, DDS_RGBA,       FourCC::A32B32G32R32F, 128, 0, 0, 0, 0 }; // R32G32B32A32_FLOAT
+
 		static_assert(sizeof(PixelFormat) == 32, "PixelFormat size mismatch");
 
-		inline ddspp_constexpr bool is_rgba_mask(const PixelFormat& ddspf, unsigned int rmask, unsigned int gmask, unsigned int bmask, unsigned int amask)
+		inline ddspp_constexpr bool is_rgba_mask(const PixelFormat& ddspf, const PixelFormat& other)
 		{
-			return (ddspf.RBitMask == rmask) && (ddspf.GBitMask == gmask) && (ddspf.BBitMask == bmask) && (ddspf.ABitMask == amask);
-		}
-
-		inline ddspp_constexpr bool is_rgb_mask(const PixelFormat& ddspf, unsigned int rmask, unsigned int gmask, unsigned int bmask)
-		{
-			return (ddspf.RBitMask == rmask) && (ddspf.GBitMask == gmask) && (ddspf.BBitMask == bmask);
+			return (ddspf.RBitMask == other.RBitMask) && (ddspf.GBitMask == other.GBitMask) && (ddspf.BBitMask == other.BBitMask) && (ddspf.ABitMask == other.ABitMask);
 		}
 	}
 
@@ -355,8 +435,6 @@ namespace ddspp
 		R4G4_UNORM                  = 190,
 
 		A4B4G4R4_UNORM              = 191,
-
-		FORCE_UINT                  = 0xffffffff
 	};
 
 	struct Header
@@ -429,7 +507,186 @@ namespace ddspp
 	inline ddspp_constexpr bool is_dxt10(const Header& header)
 	{
 		const PixelFormat& ddspf = header.ddspf;
-		return (ddspf.flags & DDS_FOURCC) && (ddspf.fourCC == FOURCC_DXT10);
+		return (ddspf.flags & DDS_FOURCC) && (ddspf.fourCC == PF_DXT10.fourCC);
+	}
+
+	inline const char* get_dxgi_format_name(DXGIFormat format)
+	{
+		switch (format)
+		{
+			case UNKNOWN:                    return "UNKNOWN";
+			case R32G32B32A32_TYPELESS:      return "R32G32B32A32_TYPELESS";
+			case R32G32B32A32_FLOAT:         return "R32G32B32A32_FLOAT";
+			case R32G32B32A32_UINT:          return "R32G32B32A32_UINT";
+			case R32G32B32A32_SINT:          return "R32G32B32A32_SINT";
+			case R32G32B32_TYPELESS:         return "R32G32B32_TYPELESS";
+			case R32G32B32_FLOAT:            return "R32G32B32_FLOAT";
+			case R32G32B32_UINT:             return "R32G32B32_UINT";
+			case R32G32B32_SINT:             return "R32G32B32_SINT";
+			case R16G16B16A16_TYPELESS:      return "R16G16B16A16_TYPELESS";
+			case R16G16B16A16_FLOAT:         return "R16G16B16A16_FLOAT";
+			case R16G16B16A16_UNORM:         return "R16G16B16A16_UNORM";
+			case R16G16B16A16_UINT:          return "R16G16B16A16_UINT";
+			case R16G16B16A16_SNORM:         return "R16G16B16A16_SNORM";
+			case R16G16B16A16_SINT:          return "R16G16B16A16_SINT";
+			case R32G32_TYPELESS:            return "R32G32_TYPELESS";
+			case R32G32_FLOAT:               return "R32G32_FLOAT";
+			case R32G32_UINT:                return "R32G32_UINT";
+			case R32G32_SINT:                return "R32G32_SINT";
+			case R32G8X24_TYPELESS:          return "R32G8X24_TYPELESS";
+			case D32_FLOAT_S8X24_UINT:       return "D32_FLOAT_S8X24_UINT";
+			case R32_FLOAT_X8X24_TYPELESS:   return "R32_FLOAT_X8X24_TYPELESS";
+			case X32_TYPELESS_G8X24_UINT:    return "X32_TYPELESS_G8X24_UINT";
+			case R10G10B10A2_TYPELESS:       return "R10G10B10A2_TYPELESS";
+			case R10G10B10A2_UNORM:          return "R10G10B10A2_UNORM";
+			case R10G10B10A2_UINT:           return "R10G10B10A2_UINT";
+			case R11G11B10_FLOAT:            return "R11G11B10_FLOAT";
+			case R8G8B8A8_TYPELESS:          return "R8G8B8A8_TYPELESS";
+			case R8G8B8A8_UNORM:             return "R8G8B8A8_UNORM";
+			case R8G8B8A8_UNORM_SRGB:        return "R8G8B8A8_UNORM_SRGB";
+			case R8G8B8A8_UINT:              return "R8G8B8A8_UINT";
+			case R8G8B8A8_SNORM:             return "R8G8B8A8_SNORM";
+			case R8G8B8A8_SINT:              return "R8G8B8A8_SINT";
+			case R16G16_TYPELESS:            return "R16G16_TYPELESS";
+			case R16G16_FLOAT:               return "R16G16_FLOAT";
+			case R16G16_UNORM:               return "R16G16_UNORM";
+			case R16G16_UINT:                return "R16G16_UINT";
+			case R16G16_SNORM:               return "R16G16_SNORM";
+			case R16G16_SINT:                return "R16G16_SINT";
+			case R32_TYPELESS:               return "R32_TYPELESS";
+			case D32_FLOAT:                  return "D32_FLOAT";
+			case R32_FLOAT:                  return "R32_FLOAT";
+			case R32_UINT:                   return "R32_UINT";
+			case R32_SINT:                   return "R32_SINT";
+			case R24G8_TYPELESS:             return "R24G8_TYPELESS";
+			case D24_UNORM_S8_UINT:          return "D24_UNORM_S8_UINT";
+			case R24_UNORM_X8_TYPELESS:      return "R24_UNORM_X8_TYPELESS";
+			case X24_TYPELESS_G8_UINT:       return "X24_TYPELESS_G8_UINT";
+			case R8G8_TYPELESS:              return "R8G8_TYPELESS";
+			case R8G8_UNORM:                 return "R8G8_UNORM";
+			case R8G8_UINT:                  return "R8G8_UINT";
+			case R8G8_SNORM:                 return "R8G8_SNORM";
+			case R8G8_SINT:                  return "R8G8_SINT";
+			case R16_TYPELESS:               return "R16_TYPELESS";
+			case R16_FLOAT:                  return "R16_FLOAT";
+			case D16_UNORM:                  return "D16_UNORM";
+			case R16_UNORM:                  return "R16_UNORM";
+			case R16_UINT:                   return "R16_UINT";
+			case R16_SNORM:                  return "R16_SNORM";
+			case R16_SINT:                   return "R16_SINT";
+			case R8_TYPELESS:                return "R8_TYPELESS";
+			case R8_UNORM:                   return "R8_UNORM";
+			case R8_UINT:                    return "R8_UINT";
+			case R8_SNORM:                   return "R8_SNORM";
+			case R8_SINT:                    return "R8_SINT";
+			case A8_UNORM:                   return "A8_UNORM";
+			case R1_UNORM:                   return "R1_UNORM";
+			case R9G9B9E5_SHAREDEXP:         return "R9G9B9E5_SHAREDEXP";
+			case R8G8_B8G8_UNORM:            return "R8G8_B8G8_UNORM";
+			case G8R8_G8B8_UNORM:            return "G8R8_G8B8_UNORM";
+			case BC1_TYPELESS:               return "BC1_TYPELESS";
+			case BC1_UNORM:                  return "BC1_UNORM";
+			case BC1_UNORM_SRGB:             return "BC1_UNORM_SRGB";
+			case BC2_TYPELESS:               return "BC2_TYPELESS";
+			case BC2_UNORM:                  return "BC2_UNORM";
+			case BC2_UNORM_SRGB:             return "BC2_UNORM_SRGB";
+			case BC3_TYPELESS:               return "BC3_TYPELESS";
+			case BC3_UNORM:                  return "BC3_UNORM";
+			case BC3_UNORM_SRGB:             return "BC3_UNORM_SRGB";
+			case BC4_TYPELESS:               return "BC4_TYPELESS";
+			case BC4_UNORM:                  return "BC4_UNORM";
+			case BC4_SNORM:                  return "BC4_SNORM";
+			case BC5_TYPELESS:               return "BC5_TYPELESS";
+			case BC5_UNORM:                  return "BC5_UNORM";
+			case BC5_SNORM:                  return "BC5_SNORM";
+			case B5G6R5_UNORM:               return "B5G6R5_UNORM";
+			case B5G5R5A1_UNORM:             return "B5G5R5A1_UNORM";
+			case B8G8R8A8_UNORM:             return "B8G8R8A8_UNORM";
+			case B8G8R8X8_UNORM:             return "B8G8R8X8_UNORM";
+			case R10G10B10_XR_BIAS_A2_UNORM: return "R10G10B10_XR_BIAS_A2_UNORM";
+			case B8G8R8A8_TYPELESS:          return "B8G8R8A8_TYPELESS";
+			case B8G8R8A8_UNORM_SRGB:        return "B8G8R8A8_UNORM_SRGB";
+			case B8G8R8X8_TYPELESS:          return "B8G8R8X8_TYPELESS";
+			case B8G8R8X8_UNORM_SRGB:        return "B8G8R8X8_UNORM_SRGB";
+			case BC6H_TYPELESS:              return "BC6H_TYPELESS";
+			case BC6H_UF16:                  return "BC6H_UF16";
+			case BC6H_SF16:                  return "BC6H_SF16";
+			case BC7_TYPELESS:               return "BC7_TYPELESS";
+			case BC7_UNORM:                  return "BC7_UNORM";
+			case BC7_UNORM_SRGB:             return "BC7_UNORM_SRGB";
+			case AYUV:                       return "AYUV";
+			case Y410:                       return "Y410";
+			case Y416:                       return "Y416";
+			case NV12:                       return "NV12";
+			case P010:                       return "P010";
+			case P016:                       return "P016";
+			case OPAQUE_420:                 return "OPAQUE_420";
+			case YUY2:                       return "YUY2";
+			case Y210:                       return "Y210";
+			case Y216:                       return "Y216";
+			case NV11:                       return "NV11";
+			case AI44:                       return "AI44";
+			case IA44:                       return "IA44";
+			case P8:                         return "P8";
+			case A8P8:                       return "A8P8";
+			case B4G4R4A4_UNORM:             return "B4G4R4A4_UNORM";
+			case R10G10B10_7E3_A2_FLOAT:     return "R10G10B10_7E3_A2_FLOAT";
+			case R10G10B10_6E4_A2_FLOAT:     return "R10G10B10_6E4_A2_FLOAT";
+			case D16_UNORM_S8_UINT:          return "D16_UNORM_S8_UINT";
+			case R16_UNORM_X8_TYPELESS:      return "R16_UNORM_X8_TYPELESS";
+			case X16_TYPELESS_G8_UINT:       return "X16_TYPELESS_G8_UINT";
+			case P208:                       return "P208";
+			case V208:                       return "V208";
+			case V408:                       return "V408";
+			case ASTC_4X4_TYPELESS:          return "ASTC_4X4_TYPELESS";
+			case ASTC_4X4_UNORM:             return "ASTC_4X4_UNORM";
+			case ASTC_4X4_UNORM_SRGB:        return "ASTC_4X4_UNORM_SRGB";
+			case ASTC_5X4_TYPELESS:          return "ASTC_5X4_TYPELESS";
+			case ASTC_5X4_UNORM:             return "ASTC_5X4_UNORM";
+			case ASTC_5X4_UNORM_SRGB:        return "ASTC_5X4_UNORM_SRGB";
+			case ASTC_5X5_TYPELESS:          return "ASTC_5X5_TYPELESS";
+			case ASTC_5X5_UNORM:             return "ASTC_5X5_UNORM";
+			case ASTC_5X5_UNORM_SRGB:        return "ASTC_5X5_UNORM_SRGB";
+			case ASTC_6X5_TYPELESS:          return "ASTC_6X5_TYPELESS";
+			case ASTC_6X5_UNORM:             return "ASTC_6X5_UNORM";
+			case ASTC_6X5_UNORM_SRGB:        return "ASTC_6X5_UNORM_SRGB";
+			case ASTC_6X6_TYPELESS:          return "ASTC_6X6_TYPELESS";
+			case ASTC_6X6_UNORM:             return "ASTC_6X6_UNORM";
+			case ASTC_6X6_UNORM_SRGB:        return "ASTC_6X6_UNORM_SRGB";
+			case ASTC_8X5_TYPELESS:          return "ASTC_8X5_TYPELESS";
+			case ASTC_8X5_UNORM:             return "ASTC_8X5_UNORM";
+			case ASTC_8X5_UNORM_SRGB:        return "ASTC_8X5_UNORM_SRGB";
+			case ASTC_8X6_TYPELESS:          return "ASTC_8X6_TYPELESS";
+			case ASTC_8X6_UNORM:             return "ASTC_8X6_UNORM";
+			case ASTC_8X6_UNORM_SRGB:        return "ASTC_8X6_UNORM_SRGB";
+			case ASTC_8X8_TYPELESS:          return "ASTC_8X8_TYPELESS";
+			case ASTC_8X8_UNORM:             return "ASTC_8X8_UNORM";
+			case ASTC_8X8_UNORM_SRGB:        return "ASTC_8X8_UNORM_SRGB";
+			case ASTC_10X5_TYPELESS:         return "ASTC_10X5_TYPELESS";
+			case ASTC_10X5_UNORM:            return "ASTC_10X5_UNORM";
+			case ASTC_10X5_UNORM_SRGB:       return "ASTC_10X5_UNORM_SRGB";
+			case ASTC_10X6_TYPELESS:         return "ASTC_10X6_TYPELESS";
+			case ASTC_10X6_UNORM:            return "ASTC_10X6_UNORM";
+			case ASTC_10X6_UNORM_SRGB:       return "ASTC_10X6_UNORM_SRGB";
+			case ASTC_10X8_TYPELESS:         return "ASTC_10X8_TYPELESS";
+			case ASTC_10X8_UNORM:            return "ASTC_10X8_UNORM";
+			case ASTC_10X8_UNORM_SRGB:       return "ASTC_10X8_UNORM_SRGB";
+			case ASTC_10X10_TYPELESS:        return "ASTC_10X10_TYPELESS";
+			case ASTC_10X10_UNORM:           return "ASTC_10X10_UNORM";
+			case ASTC_10X10_UNORM_SRGB:      return "ASTC_10X10_UNORM_SRGB";
+			case ASTC_12X10_TYPELESS:        return "ASTC_12X10_TYPELESS";
+			case ASTC_12X10_UNORM:           return "ASTC_12X10_UNORM";
+			case ASTC_12X10_UNORM_SRGB:      return "ASTC_12X10_UNORM_SRGB";
+			case ASTC_12X12_TYPELESS:        return "ASTC_12X12_TYPELESS";
+			case ASTC_12X12_UNORM:           return "ASTC_12X12_UNORM";
+			case ASTC_12X12_UNORM_SRGB:      return "ASTC_12X12_UNORM_SRGB";
+			case R10G10B10_SNORM_A2_UNORM:   return "R10G10B10_SNORM_A2_UNORM";
+			case R4G4_UNORM:                 return "R4G4_UNORM";
+			case A4B4G4R4_UNORM:             return "A4B4G4R4_UNORM";
+
+			default:
+				return "UNKNOWN_FORMAT";
+		}
 	}
 
 	inline ddspp_constexpr bool is_compressed(DXGIFormat format)
@@ -817,173 +1074,188 @@ namespace ddspp
 		{
 			if(ddspf.flags & DDS_FOURCC)
 			{
-				unsigned int fourCC = ddspf.fourCC;
+				FourCC::T fourCC = ddspf.fourCC;
 
-				switch(fourCC)
+				// Compressed
+				if(fourCC == PF_DXT1.fourCC)
 				{
-					// Compressed
-					case FOURCC_DXT1:    desc.format = BC1_UNORM; break;
-					case FOURCC_DXT2:    // fallthrough
-					case FOURCC_DXT3:    desc.format = BC2_UNORM; break;
-					case FOURCC_DXT4:    // fallthrough
-					case FOURCC_DXT5:    desc.format = BC3_UNORM; break;
-					case FOURCC_ATI1:    // fallthrough
-					case FOURCC_BC4U:    desc.format = BC4_UNORM; break;
-					case FOURCC_BC4S:    desc.format = BC4_SNORM; break;
-					case FOURCC_ATI2:    // fallthrough
-					case FOURCC_BC5U:    desc.format = BC5_UNORM; break;
-					case FOURCC_BC5S:    desc.format = BC5_SNORM; break;
+					desc.format = BC1_UNORM;
+				}
+				else if(fourCC == PF_DXT2.fourCC || fourCC == PF_DXT3.fourCC)
+				{
+					desc.format = BC2_UNORM;
+				}
+				else if(fourCC == PF_DXT4.fourCC || fourCC == PF_DXT5.fourCC)
+				{
+					desc.format = BC3_UNORM;
+				}
+				else if(fourCC == PF_ATI1.fourCC || fourCC == PF_BC4U.fourCC)
+				{
+					desc.format = BC4_UNORM;
+				}
+				else if(fourCC == PF_BC4S.fourCC)
+				{
+					desc.format = BC4_SNORM;
+				}
+				else if(fourCC == PF_ATI2.fourCC || fourCC == PF_BC5U.fourCC)
+				{
+					desc.format = BC5_UNORM;
+				}
+				else if(fourCC == PF_BC5S.fourCC)
+				{
+					desc.format = BC5_SNORM;
+				}
 
-						// Video
-					case FOURCC_RGBG:    desc.format = R8G8_B8G8_UNORM; break;
-					case FOURCC_GRBG:    desc.format = G8R8_G8B8_UNORM; break;
-					case FOURCC_YUY2:    desc.format = YUY2; break;
+				// Video
+				else if(fourCC == PF_RGBG.fourCC)
+				{
+					desc.format = R8G8_B8G8_UNORM;
+				}
+				else if(fourCC == PF_GRBG.fourCC)
+				{
+					desc.format = G8R8_G8B8_UNORM;
+				}
+				else if(fourCC == PF_YUY2.fourCC)
+				{
+					desc.format = YUY2;
+				}
 
-						// Packed
-					case FOURCC_R5G6B5:  desc.format = B5G6R5_UNORM; break;
-					case FOURCC_RGB5A1:  desc.format = B5G5R5A1_UNORM; break;
-					case FOURCC_RGBA4:   desc.format = B4G4R4A4_UNORM; break;
-
-						// Uncompressed
-					case FOURCC_A8:          desc.format = R8_UNORM; break;
-					case FOURCC_A2B10G10R10: desc.format = R10G10B10A2_UNORM; break;
-					case FOURCC_RGBA16U:     desc.format = R16G16B16A16_UNORM; break;
-					case FOURCC_RGBA16S:     desc.format = R16G16B16A16_SNORM; break;
-					case FOURCC_R16F:        desc.format = R16_FLOAT; break;
-					case FOURCC_RG16F:       desc.format = R16G16_FLOAT; break;
-					case FOURCC_RGBA16F:     desc.format = R16G16B16A16_FLOAT; break;
-					case FOURCC_R32F:        desc.format = R32_FLOAT; break;
-					case FOURCC_RG32F:       desc.format = R32G32_FLOAT; break;
-					case FOURCC_RGBA32F:     desc.format = R32G32B32A32_FLOAT; break;
-					default: break;
+				// Packed
+				else if(fourCC == PF_A8.fourCC)
+				{
+					desc.format = R8_UNORM;
+				}
+				else if(fourCC == PF_A2B10G10R10.fourCC)
+				{
+					desc.format = R10G10B10A2_UNORM;
+				}
+				else if(fourCC == PF_A16B16G16R16.fourCC)
+				{
+					desc.format = R16G16B16A16_UNORM;
+				}
+				else if(fourCC == PF_Q16W16V16U16.fourCC)
+				{
+					desc.format = R16G16B16A16_SNORM;
+				}
+				else if(fourCC == PF_R16F.fourCC)
+				{
+					desc.format = R16_FLOAT;
+				}
+				else if(fourCC == PF_R16G16F.fourCC)
+				{
+					desc.format = R16G16_FLOAT;
+				}
+				else if(fourCC == PF_A16B16G16R16F.fourCC)
+				{
+					desc.format = R16G16B16A16_FLOAT;
+				}
+				else if(fourCC == PF_R32F.fourCC)
+				{
+					desc.format = R32_FLOAT;
+				}
+				else if(fourCC == PF_R32G32F.fourCC)
+				{
+					desc.format = R32G32_FLOAT;
+				}
+				else if(fourCC == PF_A32B32G32R32F.fourCC)
+				{
+					desc.format = R32G32B32A32_FLOAT;
 				}
 			}
 			else if(ddspf.flags & DDS_RGB)
 			{
-				switch(ddspf.RGBBitCount)
+				if (is_rgba_mask(ddspf, PF_A8B8G8R8))
 				{
-					case 32:
-						if(is_rgba_mask(ddspf, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000))
-						{
-							desc.format = R8G8B8A8_UNORM;
-						}
-						else if(is_rgba_mask(ddspf, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000))
-						{
-							desc.format = B8G8R8A8_UNORM;
-						}
-						else if(is_rgba_mask(ddspf, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000))
-						{
-							desc.format = B8G8R8X8_UNORM;
-						}
-
-						// No DXGI format maps to (0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000) aka D3DFMT_X8B8G8R8
-						// No DXGI format maps to (0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000) aka D3DFMT_A2R10G10B10
-
-						// Note that many common DDS reader/writers (including D3DX) swap the
-						// the RED/BLUE masks for 10:10:10:2 formats. We assume
-						// below that the 'backwards' header mask is being used since it is most
-						// likely written by D3DX. The more robust solution is to use the 'DX10'
-						// header extension and specify the DXGI_FORMAT_R10G10B10A2_UNORM format directly
-
-						// For 'correct' writers, this should be 0x000003ff, 0x000ffc00, 0x3ff00000 for RGB data
-						else if (is_rgba_mask(ddspf, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000))
-						{
-							desc.format = R10G10B10A2_UNORM;
-						}
-						else if (is_rgba_mask(ddspf, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000))
-						{
-							desc.format = R16G16_UNORM;
-						}
-						else if (is_rgba_mask(ddspf, 0xffffffff, 0x00000000, 0x00000000, 0x00000000))
-						{
-							// The only 32-bit color channel format in D3D9 was R32F
-							desc.format = R32_FLOAT; // D3DX writes this out as a FourCC of 114
-						}
-						break;
-					case 24:
-						if(is_rgb_mask(ddspf, 0x00ff0000, 0x0000ff00, 0x000000ff))
-						{
-							desc.format = B8G8R8X8_UNORM;
-						}
-						break;
-					case 16:
-						if (is_rgba_mask(ddspf, 0x7c00, 0x03e0, 0x001f, 0x8000))
-						{
-							desc.format = B5G5R5A1_UNORM;
-						}
-						else if (is_rgba_mask(ddspf, 0xf800, 0x07e0, 0x001f, 0x0000))
-						{
-							desc.format = B5G6R5_UNORM;
-						}
-						else if (is_rgba_mask(ddspf, 0x0f00, 0x00f0, 0x000f, 0xf000))
-						{
-							desc.format = B4G4R4A4_UNORM;
-						}
-						// No DXGI format maps to (0x7c00, 0x03e0, 0x001f, 0x0000) aka D3DFMT_X1R5G5B5.
-						// No DXGI format maps to (0x0f00, 0x00f0, 0x000f, 0x0000) aka D3DFMT_X4R4G4B4.
-						// No 3:3:2, 3:3:2:8, or paletted DXGI formats aka D3DFMT_A8R3G3B2, D3DFMT_R3G3B2, D3DFMT_P8, D3DFMT_A8P8, etc.
-						break;
-					default:
-						break;
+					desc.format = R8G8B8A8_UNORM;
 				}
+				else if (is_rgba_mask(ddspf, PF_A8R8G8B8))
+				{
+					desc.format = B8G8R8A8_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_X8R8G8B8))
+				{
+					desc.format = B8G8R8X8_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_A2R10G10B10))
+				{
+					desc.format = R10G10B10A2_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_G16R16))
+				{
+					desc.format = R16G16_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_R32F))
+				{
+					desc.format = R32_FLOAT;
+				}
+				else if (is_rgba_mask(ddspf, PF_A1R5G5B5))
+				{
+					desc.format = B5G5R5A1_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_R5G6B5))
+				{
+					desc.format = B5G6R5_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_A4R4G4B4))
+				{
+					desc.format = B4G4R4A4_UNORM;
+				}
+
+				// No DXGI format maps to (0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000) aka D3DFMT_X8B8G8R8
+				// No DXGI format maps to (0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000) aka D3DFMT_A2R10G10B10
+				// No DXGI format maps to (0x7c00, 0x03e0, 0x001f, 0x0000) aka D3DFMT_X1R5G5B5.
+				// No DXGI format maps to (0x0f00, 0x00f0, 0x000f, 0x0000) aka D3DFMT_X4R4G4B4.
+				// No 3:3:2, 3:3:2:8, or paletted DXGI formats aka D3DFMT_A8R3G3B2, D3DFMT_R3G3B2, D3DFMT_P8, D3DFMT_A8P8, etc.
+				// D3DFMT_A2W10V10U10 maps to (0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)
+
+				// Note that many common DDS reader/writers (including D3DX) swap the
+				// the RED/BLUE masks for 10:10:10:2 formats. We assume
+				// below that the 'backwards' header mask is being used since it is most
+				// likely written by D3DX. The more robust solution is to use the 'DX10'
+				// header extension and specify the DXGI_FORMAT_R10G10B10A2_UNORM format directly
 			}
 			else if (ddspf.flags & DDS_LUMINANCE)
 			{
-				switch(ddspf.RGBBitCount)
+				if (is_rgba_mask(ddspf, PF_L16))
 				{
-					case 16:
-						if (is_rgba_mask(ddspf, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000))
-						{
-							desc.format = R16_UNORM; // D3DX10/11 writes this out as DX10 extension.
-						}
-						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
-						{
-							desc.format = R8G8_UNORM; // D3DX10/11 writes this out as DX10 extension.
-						}
-						break;
-					case 8:
-						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x00000000))
-						{
-							desc.format = R8_UNORM; // D3DX10/11 writes this out as DX10 extension
-						}
-
-						// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
-
-						if (is_rgba_mask(ddspf, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00))
-						{
-							desc.format = R8G8_UNORM; // Some DDS writers assume the bitcount should be 8 instead of 16
-						}
-						break;
+					desc.format = R16_UNORM;
 				}
+				else if (is_rgba_mask(ddspf, PF_A8L8))
+				{
+					desc.format = R8G8_UNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_L8))
+				{
+					desc.format = R8_UNORM;
+				}
+
+				// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
 			}
 			else if (ddspf.flags & DDS_ALPHA)
 			{
-				if (ddspf.RGBBitCount == 8)
+				switch(ddspf.RGBBitCount)
 				{
-					desc.format = A8_UNORM;
+					case 8:
+						desc.format = A8_UNORM;
+						break;
+					case 16:
+						desc.format = R16_UNORM;
+						break;
 				}
 			}
 			else if (ddspf.flags & DDS_BUMPDUDV)
 			{
-				if (ddspf.RGBBitCount == 32)
+				if (is_rgba_mask(ddspf, PF_Q8W8V8U8))
 				{
-					if (is_rgba_mask(ddspf, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000))
-					{
-						desc.format = R8G8B8A8_SNORM; // D3DX10/11 writes this out as DX10 extension
-					}
-					if (is_rgba_mask(ddspf, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000))
-					{
-						desc.format = R16G16_SNORM; // D3DX10/11 writes this out as DX10 extension
-					}
-
-					// No DXGI format maps to (0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000) aka D3DFMT_A2W10V10U10
+					desc.format = R8G8B8A8_SNORM;
 				}
-				else if (ddspf.RGBBitCount == 16)
+				else if (is_rgba_mask(ddspf, PF_V16U16))
 				{
-					if (is_rgba_mask(ddspf, 0x000000ff, 0x0000ff00, 0x00000000, 0x00000000))
-					{
-						desc.format = R8G8_SNORM; // D3DX10/11 writes this out as DX10 extension
-					}
+					desc.format = R16G16_SNORM;
+				}
+				else if (is_rgba_mask(ddspf, PF_V8U8))
+				{
+					desc.format = R8G8_SNORM;
 				}
 			}
 
@@ -1064,9 +1336,16 @@ namespace ddspp
 		// Fill in pixel format
 		PixelFormat& ddspf = header.ddspf;
 		ddspf.size = sizeof(PixelFormat);
-		ddspf.fourCC = FOURCC_DXT10;
+		ddspf.fourCC = PF_DXT10.fourCC;
 		ddspf.flags = 0;
 		ddspf.flags |= DDS_FOURCC;
+
+		// Add a way to store as the DX9 header
+		ddspf.RGBBitCount = 0;
+		ddspf.RBitMask = 0;
+		ddspf.GBitMask = 0;
+		ddspf.BBitMask = 0;
+		ddspf.ABitMask = 0;
 
 		dxt10Header.dxgiFormat = dxgiFormat;
 		dxt10Header.arraySize = arraySize;

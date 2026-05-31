@@ -221,7 +221,7 @@ namespace ddspp
 
 		static ddspp_constexpr PixelFormat PF_L8            = { 32, DDS_LUMINANCE,     FourCC::L8  ,            8, 0x000000ff, 0x00000000, 0x00000000, 0x00000000 }; // R8_UNORM
 		static ddspp_constexpr PixelFormat PF_A8L8          = { 32, DDS_LUMINANCEA,    FourCC::A8L8,           16, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00 }; // R8G8_UNORM
-		static ddspp_constexpr PixelFormat PF_A4L4          = { 32, DDS_LUMINANCEA,    FourCC::A4L4,           16, 0x0000000f, 0x00000000, 0x00000000, 0x000000f0 };
+		static ddspp_constexpr PixelFormat PF_A4L4          = { 32, DDS_LUMINANCEA,    FourCC::A4L4,            8, 0x0000000f, 0x00000000, 0x00000000, 0x000000f0 }; // R4G4_UNORM
 
 		static ddspp_constexpr PixelFormat PF_V8U8          = { 32, DDS_BUMPDUDV,      FourCC::V8U8,           16, 0x000000ff, 0x0000ff00, 0x00000000, 0x00000000 };
 		static ddspp_constexpr PixelFormat PF_L6V5U5        = { 32, DDS_BUMPLUMINANCE, FourCC::L6V5U5,         16, 0x0000001f, 0x000003e0, 0x0000fc00, 0x00000000 };
@@ -1259,8 +1259,10 @@ namespace ddspp
 				{
 					desc.format = R8_UNORM;
 				}
-
-				// No DXGI format maps to (0x0f, 0x00, 0x00, 0xf0) aka D3DFMT_A4L4
+				else if (is_rgba_mask(ddspf, PF_A4L4))
+				{
+					desc.format = R4G4_UNORM;
+				}
 			}
 			else if (ddspf.flags & DDS_ALPHA)
 			{

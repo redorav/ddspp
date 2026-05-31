@@ -1120,20 +1120,6 @@ namespace ddspp
 				{
 					desc.format = BC5_SNORM;
 				}
-
-				// Video
-				else if(fourCC == PF_RGBG.fourCC)
-				{
-					desc.format = R8G8_B8G8_UNORM;
-				}
-				else if(fourCC == PF_GRBG.fourCC)
-				{
-					desc.format = G8R8_G8B8_UNORM;
-				}
-				else if(fourCC == PF_YUY2.fourCC)
-				{
-					desc.format = YUY2;
-				}
 				else if (fourCC == PF_BC6H.fourCC)
 				{
 					desc.format = BC6H_UF16;
@@ -1149,6 +1135,20 @@ namespace ddspp
 				else if (fourCC == PF_ZOLA.fourCC)
 				{
 					desc.format = BC7_UNORM;
+				}
+
+				// Video
+				else if(fourCC == PF_RGBG.fourCC)
+				{
+					desc.format = R8G8_B8G8_UNORM;
+				}
+				else if(fourCC == PF_GRBG.fourCC)
+				{
+					desc.format = G8R8_G8B8_UNORM;
+				}
+				else if(fourCC == PF_YUY2.fourCC)
+				{
+					desc.format = YUY2;
 				}
 
 				// Packed

@@ -110,9 +110,15 @@ namespace ddspp
 				ATI1 = ddspp_make_fourcc('A', 'T', 'I', '1'), // BC4_UNORM
 				BC4U = ddspp_make_fourcc('B', 'C', '4', 'U'), // BC4_UNORM
 				BC4S = ddspp_make_fourcc('B', 'C', '4', 'S'), // BC4_SNORM
-				ATI2 = ddspp_make_fourcc('A', 'T', 'I', '2'), // BC5_UNORM
+				ATI2 = ddspp_make_fourcc('A', 'T', 'I', '2'), // BC5_UNORM with R and G swapped
 				BC5U = ddspp_make_fourcc('B', 'C', '5', 'U'), // BC5_UNORM
 				BC5S = ddspp_make_fourcc('B', 'C', '5', 'S'), // BC5_SNORM
+				BC6H = ddspp_make_fourcc('B', 'C', '6', 'H'), // BC6H_UF16
+
+				BC7L = ddspp_make_fourcc('B', 'C', '7', 'L'), // BC7_UNORM
+				BC70 = ddspp_make_fourcc('B', 'C', '7', '0'), // BC7_UNORM
+				ZOLA = ddspp_make_fourcc('Z', 'O', 'L', 'A'), // BC7_UNORM Old versions of NVTT can produce 'ZOLA'
+
 				RGBG = ddspp_make_fourcc('R', 'G', 'B', 'G'), // R8G8_B8G8_UNORM
 				GRGB = ddspp_make_fourcc('G', 'R', 'G', 'B'), // G8R8_G8B8_UNORM
 				YUY2 = ddspp_make_fourcc('Y', 'U', 'Y', '2'), // YUY2
@@ -184,6 +190,10 @@ namespace ddspp
 		static ddspp_constexpr PixelFormat PF_ATI2          = { 32, DDS_FOURCC,        FourCC::ATI2, 0, 0, 0, 0, 0 };
 		static ddspp_constexpr PixelFormat PF_BC5U          = { 32, DDS_FOURCC,        FourCC::BC5U, 0, 0, 0, 0, 0 };
 		static ddspp_constexpr PixelFormat PF_BC5S          = { 32, DDS_FOURCC,        FourCC::BC5S, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC6H          = { 32, DDS_FOURCC,        FourCC::BC6H, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC7L          = { 32, DDS_FOURCC,        FourCC::BC7L, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC70          = { 32, DDS_FOURCC,        FourCC::BC70, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_ZOLA          = { 32, DDS_FOURCC,        FourCC::ZOLA, 0, 0, 0, 0, 0 };
 		static ddspp_constexpr PixelFormat PF_RGBG          = { 32, DDS_FOURCC,        FourCC::RGBG, 0, 0, 0, 0, 0 };
 		static ddspp_constexpr PixelFormat PF_GRBG          = { 32, DDS_FOURCC,        FourCC::GRGB, 0, 0, 0, 0, 0 };
 		static ddspp_constexpr PixelFormat PF_YUY2          = { 32, DDS_FOURCC,        FourCC::YUY2, 0, 0, 0, 0, 0 };
@@ -1123,6 +1133,22 @@ namespace ddspp
 				else if(fourCC == PF_YUY2.fourCC)
 				{
 					desc.format = YUY2;
+				}
+				else if (fourCC == PF_BC6H.fourCC)
+				{
+					desc.format = BC6H_UF16;
+				}
+				else if (fourCC == PF_BC7L.fourCC)
+				{
+					desc.format = BC7_UNORM;
+				}
+				else if (fourCC == PF_BC70.fourCC)
+				{
+					desc.format = BC7_UNORM;
+				}
+				else if (fourCC == PF_ZOLA.fourCC)
+				{
+					desc.format = BC7_UNORM;
 				}
 
 				// Packed

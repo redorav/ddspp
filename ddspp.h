@@ -57,6 +57,7 @@ namespace ddspp
 		static ddspp_constexpr unsigned int DDS_RGBA              = DDS_RGB | DDS_ALPHA;
 		static ddspp_constexpr unsigned int DDS_PALETTEINDEXED8A  = DDS_PALETTEINDEXED8 | DDS_ALPHAPIXELS;
 		static ddspp_constexpr unsigned int DDS_LUMINANCEA        = DDS_LUMINANCE | DDS_ALPHAPIXELS;
+		static ddspp_constexpr unsigned int DDS_BUMPDUDVA         = DDS_BUMPDUDV | DDS_ALPHAPIXELS;
 
 		static ddspp_constexpr unsigned int DDS_HEADER_FLAGS_CAPS        = 0x00000001; // DDSD_CAPS
 		static ddspp_constexpr unsigned int DDS_HEADER_FLAGS_HEIGHT      = 0x00000002; // DDSD_HEIGHT
@@ -118,42 +119,44 @@ namespace ddspp
 				UYVY = ddspp_make_fourcc('U', 'Y', 'V', 'Y'), // UYVY
 				DX10 = ddspp_make_fourcc('D', 'X', '1', '0'), // DDS extension header
 
-				R8G8B8 = 20,
-				A8R8G8B8 = 21,
-				X8R8G8B8 = 22,
-				R5G6B5 = 23,
-				X1R5G5B5 = 24,
-				A1R5G5B5 = 25,
-				A4R4G4B4 = 26,
-				R3G3B2 = 27,
-				A8 = 28,
-				A8R3G3B2 = 29,
-				X4R4G4B4 = 30,
-				A2B10G10R10 = 31,
-				A8B8G8R8 = 32,
-				X8B8G8R8 = 33,
-				G16R16 = 34,
-				A2R10G10B10 = 35,
-				A16B16G16R16 = 36,
+				R8G8B8        = 20,
+				A8R8G8B8      = 21,
+				X8R8G8B8      = 22,
+				R5G6B5        = 23,
+				X1R5G5B5      = 24,
+				A1R5G5B5      = 25,
+				A4R4G4B4      = 26,
+				R3G3B2        = 27,
+				A8            = 28,
+				A8R3G3B2      = 29,
+				X4R4G4B4      = 30,
+				A2B10G10R10   = 31,
+				A8B8G8R8      = 32,
+				X8B8G8R8      = 33,
+				G16R16        = 34,
+				A2R10G10B10   = 35,
+				A16B16G16R16  = 36,
 
-				L8 = 50,
-				A8L8 = 51,
-				A4L4 = 52,
+				L8            = 50,
+				A8L8          = 51,
+				A4L4          = 52,
 
-				V8U8 = 60,
-				Q8W8V8U8 = 63,
-				V16U16 = 64,
+				V8U8          = 60,
+				L6V5U5        = 61,
+				X8L8V8U8      = 62,
+				Q8W8V8U8      = 63,
+				V16U16        = 64,
 
-				A2W10V10U10 = 67,
+				A2W10V10U10   = 67,
 
-				L16 = 81,
+				L16           = 81,
 
-				Q16W16V16U16 = 110,
-				R16F = 111,
-				R16G16F = 112,
+				Q16W16V16U16  = 110,
+				R16F          = 111,
+				R16G16F       = 112,
 				A16B16G16R16F = 113,
-				R32F = 114,
-				R32G32F = 115,
+				R32F          = 114,
+				R32G32F       = 115,
 				A32B32G32R32F = 116,
 			};
 		};
@@ -170,61 +173,63 @@ namespace ddspp
 			unsigned int ABitMask;
 		};
 
-		static ddspp_constexpr PixelFormat PF_DXT1          = { 32, DDS_FOURCC,     FourCC::DXT1, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_DXT2          = { 32, DDS_FOURCC,     FourCC::DXT2, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_DXT3          = { 32, DDS_FOURCC,     FourCC::DXT3, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_DXT4          = { 32, DDS_FOURCC,     FourCC::DXT4, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_DXT5          = { 32, DDS_FOURCC,     FourCC::DXT5, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_ATI1          = { 32, DDS_FOURCC,     FourCC::ATI1, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_BC4U          = { 32, DDS_FOURCC,     FourCC::BC4U, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_BC4S          = { 32, DDS_FOURCC,     FourCC::BC4S, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_ATI2          = { 32, DDS_FOURCC,     FourCC::ATI2, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_BC5U          = { 32, DDS_FOURCC,     FourCC::BC5U, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_BC5S          = { 32, DDS_FOURCC,     FourCC::BC5S, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_RGBG          = { 32, DDS_FOURCC,     FourCC::RGBG, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_GRBG          = { 32, DDS_FOURCC,     FourCC::GRGB, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_YUY2          = { 32, DDS_FOURCC,     FourCC::YUY2, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_UYVY          = { 32, DDS_FOURCC,     FourCC::UYVY, 0, 0, 0, 0, 0 };
-		static ddspp_constexpr PixelFormat PF_DXT10         = { 32, DDS_FOURCC,     FourCC::DX10, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT1          = { 32, DDS_FOURCC,        FourCC::DXT1, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT2          = { 32, DDS_FOURCC,        FourCC::DXT2, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT3          = { 32, DDS_FOURCC,        FourCC::DXT3, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT4          = { 32, DDS_FOURCC,        FourCC::DXT4, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT5          = { 32, DDS_FOURCC,        FourCC::DXT5, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_ATI1          = { 32, DDS_FOURCC,        FourCC::ATI1, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC4U          = { 32, DDS_FOURCC,        FourCC::BC4U, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC4S          = { 32, DDS_FOURCC,        FourCC::BC4S, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_ATI2          = { 32, DDS_FOURCC,        FourCC::ATI2, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC5U          = { 32, DDS_FOURCC,        FourCC::BC5U, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_BC5S          = { 32, DDS_FOURCC,        FourCC::BC5S, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_RGBG          = { 32, DDS_FOURCC,        FourCC::RGBG, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_GRBG          = { 32, DDS_FOURCC,        FourCC::GRGB, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_YUY2          = { 32, DDS_FOURCC,        FourCC::YUY2, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_UYVY          = { 32, DDS_FOURCC,        FourCC::UYVY, 0, 0, 0, 0, 0 };
+		static ddspp_constexpr PixelFormat PF_DXT10         = { 32, DDS_FOURCC,        FourCC::DX10, 0, 0, 0, 0, 0 };
 
 		// The FOURCC codes come from the original D3D9 D3DFORMAT values https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
-		static ddspp_constexpr PixelFormat PF_R8G8B8        = { 32, DDS_RGB,        FourCC::R8G8B8,         24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_A8R8G8B8      = { 32, DDS_RGBA,       FourCC::A8R8G8B8,       32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 };
-		static ddspp_constexpr PixelFormat PF_X8R8G8B8      = { 32, DDS_RGB,        FourCC::X8R8G8B8,       24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_R5G6B5        = { 32, DDS_RGB,        FourCC::R5G6B5,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 }; // B5G6R5_UNORM   (needs swizzling)
-		static ddspp_constexpr PixelFormat PF_X1R5G5B5      = { 32, DDS_RGB,        FourCC::X1R5G5B5,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_A1R5G5B5      = { 32, DDS_RGBA,       FourCC::A1R5G5B5,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000 }; // B5G5R5A1_UNORM (needs swizzling)
-		static ddspp_constexpr PixelFormat PF_A4R4G4B4      = { 32, DDS_RGBA,       FourCC::A4R4G4B4,       16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000 }; // B4G4R4A4_UNORM (needs swizzling)
-		static ddspp_constexpr PixelFormat PF_R3G3B2        = { 32, DDS_RGB,        FourCC::R3G3B2,          8, 0x000000e0, 0x0000001c, 0x00000003, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_A8            = { 32, DDS_ALPHA,      FourCC::A8,              8, 0x00000000, 0x00000000, 0x00000000, 0x000000ff };
-		static ddspp_constexpr PixelFormat PF_A8R3G3B2      = { 32, DDS_RGBA,       FourCC::A8R3G3B2,       16, 0x000000e0, 0x0000001c, 0x00000003, 0x0000ff00 };
-		static ddspp_constexpr PixelFormat PF_X4R4G4B4      = { 32, DDS_RGB,        FourCC::X4R4G4B4,       16, 0x00000f00, 0x000000f0, 0x0000000f, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_A2B10G10R10   = { 32, DDS_RGBA,       FourCC::A2B10G10R10,    32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000 };
-		static ddspp_constexpr PixelFormat PF_A8B8G8R8      = { 32, DDS_RGBA,       FourCC::A8B8G8R8,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
-		static ddspp_constexpr PixelFormat PF_X8B8G8R8      = { 32, DDS_RGB,        FourCC::X8B8G8R8,       24, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_G16R16        = { 32, DDS_RGB,        FourCC::G16R16,         32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_A2R10G10B10   = { 32, DDS_RGBA,       FourCC::A2R10G10B10,    32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000 };
-		static ddspp_constexpr PixelFormat PF_A16B16G16R16  = { 32, DDS_RGBA,       FourCC::A16B16G16R16,   64, 0, 0, 0, 0 }; // R16G16B16A16_UNORM
+		static ddspp_constexpr PixelFormat PF_R8G8B8        = { 32, DDS_RGB,           FourCC::R8G8B8,         24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A8R8G8B8      = { 32, DDS_RGBA,          FourCC::A8R8G8B8,       32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 };
+		static ddspp_constexpr PixelFormat PF_X8R8G8B8      = { 32, DDS_RGB,           FourCC::X8R8G8B8,       24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_R5G6B5        = { 32, DDS_RGB,           FourCC::R5G6B5,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 }; // B5G6R5_UNORM   (needs swizzling)
+		static ddspp_constexpr PixelFormat PF_X1R5G5B5      = { 32, DDS_RGB,           FourCC::X1R5G5B5,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A1R5G5B5      = { 32, DDS_RGBA,          FourCC::A1R5G5B5,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000 }; // B5G5R5A1_UNORM (needs swizzling)
+		static ddspp_constexpr PixelFormat PF_A4R4G4B4      = { 32, DDS_RGBA,          FourCC::A4R4G4B4,       16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000 }; // B4G4R4A4_UNORM (needs swizzling)
+		static ddspp_constexpr PixelFormat PF_R3G3B2        = { 32, DDS_RGB,           FourCC::R3G3B2,          8, 0x000000e0, 0x0000001c, 0x00000003, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A8            = { 32, DDS_ALPHA,         FourCC::A8,              8, 0x00000000, 0x00000000, 0x00000000, 0x000000ff };
+		static ddspp_constexpr PixelFormat PF_A8R3G3B2      = { 32, DDS_RGBA,          FourCC::A8R3G3B2,       16, 0x000000e0, 0x0000001c, 0x00000003, 0x0000ff00 };
+		static ddspp_constexpr PixelFormat PF_X4R4G4B4      = { 32, DDS_RGB,           FourCC::X4R4G4B4,       16, 0x00000f00, 0x000000f0, 0x0000000f, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A2B10G10R10   = { 32, DDS_RGBA,          FourCC::A2B10G10R10,    32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000 };
+		static ddspp_constexpr PixelFormat PF_A8B8G8R8      = { 32, DDS_RGBA,          FourCC::A8B8G8R8,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
+		static ddspp_constexpr PixelFormat PF_X8B8G8R8      = { 32, DDS_RGB,           FourCC::X8B8G8R8,       24, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_G16R16        = { 32, DDS_RGB,           FourCC::G16R16,         32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_A2R10G10B10   = { 32, DDS_RGBA,          FourCC::A2R10G10B10,    32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000 };
+		static ddspp_constexpr PixelFormat PF_A16B16G16R16  = { 32, DDS_RGBA,          FourCC::A16B16G16R16,   64, 0, 0, 0, 0 }; // R16G16B16A16_UNORM
 
-		static ddspp_constexpr PixelFormat PF_L8            = { 32, DDS_LUMINANCE,  FourCC::L8  ,            8, 0x000000ff, 0x00000000, 0x00000000, 0x00000000 }; // R8_UNORM
-		static ddspp_constexpr PixelFormat PF_A8L8          = { 32, DDS_LUMINANCEA, FourCC::A8L8,           16, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00 }; // R8G8_UNORM
-		static ddspp_constexpr PixelFormat PF_A4L4          = { 32, DDS_LUMINANCEA, FourCC::A4L4,           16, 0x0000000f, 0x00000000, 0x00000000, 0x000000f0 };
+		static ddspp_constexpr PixelFormat PF_L8            = { 32, DDS_LUMINANCE,     FourCC::L8  ,            8, 0x000000ff, 0x00000000, 0x00000000, 0x00000000 }; // R8_UNORM
+		static ddspp_constexpr PixelFormat PF_A8L8          = { 32, DDS_LUMINANCEA,    FourCC::A8L8,           16, 0x000000ff, 0x00000000, 0x00000000, 0x0000ff00 }; // R8G8_UNORM
+		static ddspp_constexpr PixelFormat PF_A4L4          = { 32, DDS_LUMINANCEA,    FourCC::A4L4,           16, 0x0000000f, 0x00000000, 0x00000000, 0x000000f0 };
 
-		static ddspp_constexpr PixelFormat PF_V8U8          = { 32, DDS_BUMPDUDV,   FourCC::V8U8,           16, 0x000000ff, 0x0000ff00, 0x00000000, 0x00000000 };
-		static ddspp_constexpr PixelFormat PF_Q8W8V8U8      = { 32, DDS_BUMPDUDV,   FourCC::Q8W8V8U8,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
-		static ddspp_constexpr PixelFormat PF_V16U16        = { 32, DDS_BUMPDUDV,   FourCC::V16U16,         32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_V8U8          = { 32, DDS_BUMPDUDV,      FourCC::V8U8,           16, 0x000000ff, 0x0000ff00, 0x00000000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_L6V5U5        = { 32, DDS_BUMPLUMINANCE, FourCC::L6V5U5,         16, 0x0000001f, 0x000003e0, 0x0000fc00, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_X8L8V8U8      = { 32, DDS_BUMPLUMINANCE, FourCC::X8L8V8U8,       24, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 };
+		static ddspp_constexpr PixelFormat PF_Q8W8V8U8      = { 32, DDS_BUMPDUDV,      FourCC::Q8W8V8U8,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 };
+		static ddspp_constexpr PixelFormat PF_V16U16        = { 32, DDS_BUMPDUDV,      FourCC::V16U16,         32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000 };
 
-		static ddspp_constexpr PixelFormat PF_A2W10V10U10   = { 32, DDS_RGBA,       FourCC::A2W10V10U10,    32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000 };
+		static ddspp_constexpr PixelFormat PF_A2W10V10U10   = { 32, DDS_BUMPDUDVA,     FourCC::A2W10V10U10,    32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000 };
 
-		static ddspp_constexpr PixelFormat PF_L16           = { 32, DDS_LUMINANCE,  FourCC::L16,            16, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000 }; // R16_UNORM
+		static ddspp_constexpr PixelFormat PF_L16           = { 32, DDS_LUMINANCE,     FourCC::L16,            16, 0x0000ffff, 0x00000000, 0x00000000, 0x00000000 }; // R16_UNORM
 
-		static ddspp_constexpr PixelFormat PF_Q16W16V16U16  = { 32, DDS_RGBA,       FourCC::Q16W16V16U16,   64, 0, 0, 0, 0 }; // R16G16B16A16_SNORM
-		static ddspp_constexpr PixelFormat PF_R16F          = { 32, DDS_RGB,        FourCC::R16F,           16, 0, 0, 0, 0 }; // R16_FLOAT
-		static ddspp_constexpr PixelFormat PF_R16G16F       = { 32, DDS_RGB,        FourCC::R16G16F,        32, 0, 0, 0, 0 }; // R16G16_FLOAT
-		static ddspp_constexpr PixelFormat PF_A16B16G16R16F = { 32, DDS_RGBA,       FourCC::A16B16G16R16F,  64, 0, 0, 0, 0 }; // R16G16B16A16_FLOAT
-		static ddspp_constexpr PixelFormat PF_R32F          = { 32, DDS_RGB,        FourCC::R32F,           32, 0, 0, 0, 0 }; // R32_FLOAT
-		static ddspp_constexpr PixelFormat PF_R32G32F       = { 32, DDS_RGB,        FourCC::R32G32F,        64, 0, 0, 0, 0 }; // R32G32_FLOAT
-		static ddspp_constexpr PixelFormat PF_A32B32G32R32F = { 32, DDS_RGBA,       FourCC::A32B32G32R32F, 128, 0, 0, 0, 0 }; // R32G32B32A32_FLOAT
+		static ddspp_constexpr PixelFormat PF_Q16W16V16U16  = { 32, DDS_RGBA,          FourCC::Q16W16V16U16,   64, 0, 0, 0, 0 }; // R16G16B16A16_SNORM
+		static ddspp_constexpr PixelFormat PF_R16F          = { 32, DDS_RGB,           FourCC::R16F,           16, 0, 0, 0, 0 }; // R16_FLOAT
+		static ddspp_constexpr PixelFormat PF_R16G16F       = { 32, DDS_RGB,           FourCC::R16G16F,        32, 0, 0, 0, 0 }; // R16G16_FLOAT
+		static ddspp_constexpr PixelFormat PF_A16B16G16R16F = { 32, DDS_RGBA,          FourCC::A16B16G16R16F,  64, 0, 0, 0, 0 }; // R16G16B16A16_FLOAT
+		static ddspp_constexpr PixelFormat PF_R32F          = { 32, DDS_RGB,           FourCC::R32F,           32, 0, 0, 0, 0 }; // R32_FLOAT
+		static ddspp_constexpr PixelFormat PF_R32G32F       = { 32, DDS_RGB,           FourCC::R32G32F,        64, 0, 0, 0, 0 }; // R32G32_FLOAT
+		static ddspp_constexpr PixelFormat PF_A32B32G32R32F = { 32, DDS_RGBA,          FourCC::A32B32G32R32F, 128, 0, 0, 0, 0 }; // R32G32B32A32_FLOAT
 
 		static_assert(sizeof(PixelFormat) == 32, "PixelFormat size mismatch");
 
